@@ -45,7 +45,7 @@ import Main from '@/view/layout/components/main'
       width:100%;
       height:100vh;
       .sidebar{
-        width:200px;
+        width:230px;
         height:100vh;
         background-color:#fff;
         border-right:1px solid #e6e6e6;
@@ -57,7 +57,7 @@ import Main from '@/view/layout/components/main'
       .app-m{
         width:100%;
         height:100vh;
-        padding:50px 0 0 200px;
+        padding:50px 0 0 230px;
       }
     }
   }

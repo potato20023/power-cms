@@ -13,5 +13,8 @@ module.exports={
             args[0].title = 'cmz-cms-demo'
             return args
         })
+    },
+    devServer:{
+        port:'9000'
     }
 }

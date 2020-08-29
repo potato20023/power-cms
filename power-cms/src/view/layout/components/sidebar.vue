@@ -10,7 +10,7 @@
     >
       <div v-for="item in routerList" :key="item.path">
         <!-- 没有三级菜单，二级菜单只有一个，直接显示成一级菜单 -->
-        <router-link
+        <!-- <router-link
           v-if="item.children.length == 1 && !item.children[0].children"
           :to="{path:item.path+'/'+item.children[0].path}"
           :key="item.meta.title"
@@ -23,9 +23,9 @@
             ></i>
             <span v-if="item.children[0].meta && item.children">{{item.children[0].meta.title}}</span>
           </el-menu-item>
-        </router-link>
+        </router-link> -->
         <!-- 二级菜单有多个 -->
-        <el-submenu v-else :index="item.name || item.path" :key="item.meta.title">
+        <el-submenu :index="item.name || item.path" :key="item.meta.title">
           <template slot="title">
             <i v-if="item.meta && item.meta.icon" class="iconfont" :class="item.meta.icon"></i>
             <span slot="title" v-if="item.meta && item.meta.title">{{item.meta.title}}</span>
@@ -83,9 +83,12 @@ export default {
 </script>
 <style lang='scss' scoped>
 .sidebar {
-  width: 190px;
+  width: 250px;
+  height:100%;
+  overflow: auto;
   .el-menu {
     border: 0;
+    height:100%;
     .el-menu-item span {
       margin-left: 10px;
     }

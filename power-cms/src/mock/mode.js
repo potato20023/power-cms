@@ -30,134 +30,104 @@ const userList = {
         code: 200,
         data: {
             list: [{
-                    userNum: 100001, //客户编号
-                    userName: '张琳梵', // 客户名字
+                    userNum: 100001, //用户编号
+                    userName: '张琳', // 用户名字
                     phone: 15844821640, // 电话
-                    job: '餐饮', // 行业
-                    address: '河南省郑州市高新区翠竹街88号', // 地址
-                    from: '手动录入', //来源
-                    salesman: '李明', // 销售人员
-                    createTime: '2018-09-25', // 入库时间
-                    state: 1, // 状态
-                    track: '15', // 跟踪
-                    degree: 3 // 难易度
+                    identityNum: 1,  // 用户身份 1:超级管理员 2:变电站管理员  3:普通员工
+                    identityName:'超级管理员',
+                    createTime: '2018-09-25', // 创建时间
+                    state: 1, // 状态 1:正常 2：停用
+                    password:'123456'
                 },
                 {
                     userNum: 100002,
                     userName: '马东',
                     phone: 15844821640,
-                    job: '餐饮',
-                    address: '河南省郑州市高新区翠竹街33号',
-                    from: '手动录入',
-                    salesman: '李明',
-                    createTime: '2018-09-25',
-                    state: 2,
-                    track: '15',
-                    degree: 3
+                    identityNum: 2, // 1:超级管理员 2:变电站管理员  3:普通员工
+                    identityName:'变电站管理员',
+                    createTime: '2018-09-25', // 创建时间
+                    state: 2, // 状态
+                    password:'123456'
                 },
                 {
                     userNum: 100003,
-                    userName: '山西面馆',
+                    userName: '张山',
                     phone: 15844821640,
-                    job: '餐饮',
-                    address: '河南省郑州市高新区翠竹街88号',
-                    from: '手动录入',
-                    salesman: '李明',
-                    createTime: '2018-09-25',
-                    state: 3,
-                    track: '15',
-                    degree: 3
+                    identityNum: 2, // 1:超级管理员 2:变电站管理员  3:普通员工
+                    identityName:'变电站管理员',
+                    createTime: '2018-09-25', // 创建时间
+                    state: 2, // 状态
+                    password:'123456'
                 },
                 {
                     userNum: 100004,
-                    userName: '徐东旭',
+                    userName: '徐东',
                     phone: 15844821640,
-                    job: '餐饮',
-                    address: '河南省郑州市高新区翠竹街88号',
-                    from: '手动录入',
-                    salesman: '李明',
-                    createTime: '2018-09-25',
-                    state: 4,
-                    track: '15',
-                    degree: 4
+                    identityNum: 2, // 1:超级管理员 2:变电站管理员  3:普通员工
+                    identityName:'变电站管理员',
+                    createTime: '2018-09-25', // 创建时间
+                    state: 2, // 状态
+                    password:'123456'
                 },
                 {
                     userNum: 100005,
-                    userName: '张琳梵',
+                    userName: '张琳',
                     phone: 15844821640,
-                    job: '百货',
-                    address: '河南省郑州市高新区翠竹街88号',
-                    from: '手动录入',
-                    salesman: '李明',
-                    createTime: '2018-09-25',
-                    state: 5,
-                    track: '15',
-                    degree: 3
+                    identityNum: 2, // 1:超级管理员 2:变电站管理员  3:普通员工
+                    identityName:'变电站管理员',
+                    createTime: '2018-09-25', // 创建时间
+                    state: 2, // 状态
+                    password:'123456'
                 },
                 {
                     userNum: 100006,
-                    userName: '张琳梵',
+                    userName: '张琳',
                     phone: 15844821640,
-                    job: '餐饮',
-                    address: '河南省郑州市高新区翠竹街88号',
-                    from: '手动录入',
-                    salesman: '李明',
-                    createTime: '2018-09-25',
-                    state: 1,
-                    track: '15',
-                    degree: 3
+                    identityNum: 2, // 1:超级管理员 2:变电站管理员  3:普通员工
+                    identityName:'变电站管理员',
+                    createTime: '2018-09-25', // 创建时间
+                    state: 2, // 状态
+                    password:'123456'
                 },
                 {
                     userNum: 100007,
-                    userName: '张琳梵',
+                    userName: '张琳',
                     phone: 15844821640,
-                    job: '餐饮',
-                    address: '河南省郑州市高新区翠竹街88号',
-                    from: '手动录入',
-                    salesman: '李明',
-                    createTime: '2018-09-25',
-                    state: 1,
-                    track: '15',
-                    degree: 3
+                    identityNum: 2, // 1:超级管理员 2:变电站管理员  3:普通员工
+                    identityName:'变电站管理员',
+                    createTime: '2018-09-25', // 创建时间
+                    state: 2, // 状态
+                    password:'123456'
                 },
                 {
                     userNum: 100008,
-                    userName: '张琳梵',
+                    userName: '张琳',
                     phone: 15844821640,
-                    job: '餐饮',
-                    address: '河南省郑州市高新区翠竹街88号',
-                    from: '手动录入',
-                    salesman: '李明',
-                    createTime: '2018-09-25',
-                    state: 1,
-                    track: '15',
-                    degree: 3
+                    identityNum: 2, // 1:超级管理员 2:变电站管理员  3:普通员工
+                    identityName:'变电站管理员',
+                    createTime: '2018-09-25', // 创建时间
+                    state: 2, // 状态
+                    password:'123456'
                 },
                 {
-                    userNum: 100009,
-                    userName: '张琳梵',
+                    userNum: 100009,   //用户编号
+                    userName: '张琳',
                     phone: 15844821640,
-                    job: '餐饮',
-                    address: '河南省郑州市高新区翠竹街88号',
-                    from: '手动录入',
-                    salesman: '李明',
-                    createTime: '2018-09-25',
-                    state: 1,
-                    track: '15',
-                    degree: 3
+                    identityNum: 2, // 1:超级管理员 2:变电站管理员  3:普通员工
+                    identityName:'变电站管理员',
+                    createTime: '2018-09-25', // 创建时间
+                    state: 2, // 状态
+                    password:'123456'
                 },
                 {
-                    userNum: 1000010,
-                    userName: '张琳梵',
+                    userNum: 100010,
+                    userName: '张琳',
                     phone: 15844821640,
-                    job: '餐饮',
-                    address: '河南省郑州市高新区翠竹街88号',
-                    from: '手动录入',
-                    salesman: '李明',
-                    createTime: '2018-09-25',
-                    state: 1,
-                    track: '15',
-                    degree: 3
+                    identityNum: 2, // 1:超级管理员 2:变电站管理员  3:普通员工
+                    identityName:'变电站管理员',
+                    createTime: '2018-09-25', // 创建时间
+                    state: 2, // 状态
+                    password:'123456'
                 }
             ]
         }

@@ -1,8 +1,12 @@
 <template>
   <div class="user-container">
     <div v-if="ifList" class="user-top">
-      <div class="title">用户资料管理</div>
-      <ul class="operation">
+      <div class="title">账号管理</div>
+      <div>
+        <el-button type="primary" round size="medium">新增</el-button>
+      </div>
+      
+      <!-- <ul class="operation">
         <li @click="add">
           <i class="el-icon-plus"></i>
           添加
@@ -16,18 +20,16 @@
           导出
         </li>
         <li @click="outExe">导出模板</li>
-      </ul>
+      </ul> -->
     </div>
 
     
 
     <!-- 表格 -->
-    <div v-if="ifList" class="user-table">
+    <!-- <div v-if="ifList" class="user-table">
       <el-table
         ref="multipleTable"
         :data="userList"
-        tooltip-effect="dark"
-        style="width:100%"
         border
         @selection-change="handleSelectionChange"
       >
@@ -93,24 +95,62 @@
             ></i>
           </template>
         </el-table-column>
-        <el-table-column label="操作">
+        <el-table-column label="操作" fixed='right'>
           <template slot-scope="scope" class="scope-i">
             <i class="el-icon-edit" @click="handleClick(scope.row)"></i>
             <i class="el-icon-delete" @click="handleDelete(scope.row)"></i>
           </template>
         </el-table-column>
       </el-table>
-    </div>
+    </div> -->
 
     <!-- 新增或编辑 -->
-    <userAdd v-if="!ifList"></userAdd>
+    <!-- <userAdd v-if="!ifList"></userAdd> -->
+
+    <el-table
+      :data='userList'
+      border
+      style='width:100%'
+    >
+      <el-table-column prop="userNum" label="用户编号" width="120"></el-table-column>
+      <el-table-column prop="userName" label="用户名"></el-table-column>
+      <el-table-column prop="phone" label="电话"></el-table-column>
+      <el-table-column prop="identityNum" label="用户身份">
+        <template slot-scope='scope'>
+          <span v-if="scope.row.identityNum == 1">超级管理员</span>
+          <span v-if="scope.row.identityNum == 2">变电站管理员</span>
+          <span v-if="scope.row.identityNum == 3">普通员工</span>
+        </template>
+      </el-table-column>
+      <el-table-column prop="createTime" label="创建时间"></el-table-column>
+      <el-table-column width="200" fixed="right" label="操作">
+        <template slot-scope="scope">
+          <el-button type="primary" size="mini" @click="handleClick(scope.row)">编辑</el-button>
+          <el-button type="danger" size="mini" @click="handleDelete(scope.row)">删除</el-button>
+        </template>
+      </el-table-column>
+    </el-table>
+
+    <!-- 分页 -->
+    <el-pagination
+      background
+      layout="total,sizes,prev, pager, next,jumper"
+      :total="400"
+      @size-change='handleSizeChange'
+      @current-change='handleCurrentChange'
+      :current-page='currentPage' 
+      :page-sizes='[10,20,30,40]'
+      :page-size="100"
+      class="pagination"
+    >
+    </el-pagination>
   </div>
 </template>
 
 <script>
 import { mapGetters } from "vuex";
 import { getUserList } from "@/api/mode";
-import userAdd from "@/view/permission/userAdd";
+// import userAdd from "@/view/permission/userAdd";
 export default {
   name: "",
   data() {
@@ -118,14 +158,15 @@ export default {
       numList: [],
       userList: [],
       fileListUpload: [],
-      tableData2: []
+      tableData2: [],
+      currentPage:1,//分页-当前页
     };
   },
   computed: {
     ...mapGetters(["breadList", "ifList"])
   },
   components: {
-    userAdd
+    // userAdd
   },
   mounted() {
     this.getUserLists();
@@ -227,6 +268,14 @@ export default {
     // 删除
     handleDelete(e) {
       console.log(e);
+    },
+    // 分页
+    handleSizeChange(val){
+      console.log(`每条${val}条`)
+    },
+    // 分页
+    handleCurrentChange(val){
+      console.log(`当前页`)
     }
   },
   watch: {}
@@ -237,11 +286,7 @@ export default {
   width: 100%;
   .user-top {
     width: 100%;
-    // min-width: 1600px;
-    height: 50px;
-    display: flex;
-    justify-content: space-between;
-    padding: 0 20px;
+    padding-bottom: 20px;
     .title {
       font-size: 20px;
       line-height: 50px;
@@ -262,27 +307,8 @@ export default {
       }
     }
   }
-
-  .user-table {
-    width: 100%;
-    height: 100%;
-    // min-width: 1600px;
-    padding: 20px;
-    .el-icon-edit {
-      font-size: 22px;
-      margin: 0 10px;
-      cursor: pointer;
-      color: #347ab8;
-    }
-    .el-icon-delete {
-      font-size: 22px;
-      margin: 0 10px;
-      cursor: pointer;
-      color: red;
-    }
-    .el-icon-star-on {
-      font-size: 20px;
-    }
+  .pagination{
+    margin-top:30px;
   }
 }
 </style>

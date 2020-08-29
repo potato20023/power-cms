@@ -1,6 +1,6 @@
 <template>
   <div class="head">
-      <div class="title">后台管理系统</div>
+      <div class="title">电能集中远程管控平台</div>
       <div class="user">
         <img v-if="avatar" :src="avatar" alt="">
         <img v-else src="../../../assets/image/avatar.jpg" alt="">

@@ -2,7 +2,7 @@
 <template>
   <div class="login">
     <div class="login-form">
-      <p class="title">cmz后台管理系统</p>
+      <p class="title">电能集中远程管控平台</p>
       <el-form ref="loginForm" :model="loginForm" :rules="rule">
         <el-form-item prop="userName">
           <el-input v-model="loginForm.userName" maxlength="20" placeholder="请输入用户名"></el-input>
