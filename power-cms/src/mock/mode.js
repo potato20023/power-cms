@@ -151,4 +151,52 @@ const userAddSelect = {
     }
 }
 
+const datas = {
+    code:200,
+    data:{
+        name:'名字',
+        obj:{
+            over:'290',
+            all:'1000'
+        },
+        list:[
+            {
+                userNum: 100008,
+                userName: '张琳',
+                phone: 15844821640,
+                identityNum: 2, // 1:超级管理员 2:变电站管理员  3:普通员工
+                identityName:'变电站管理员',
+                createTime: '2018-09-25', // 创建时间
+                state: 2, // 状态
+                password:'123456'
+            },
+            {
+                userNum: 100009,   //用户编号
+                userName: '张琳',
+                phone: 15844821640,
+                identityNum: 2, // 1:超级管理员 2:变电站管理员  3:普通员工
+                identityName:'变电站管理员',
+                createTime: '2018-09-25', // 创建时间
+                state: 2, // 状态
+                password:'123456'
+            },
+            {
+                userNum: 100010,
+                userName: '张琳',
+                phone: 15844821640,
+                identityNum: 2, // 1:超级管理员 2:变电站管理员  3:普通员工
+                identityName:'变电站管理员',
+                createTime: '2018-09-25', // 创建时间
+                state: 2, // 状态
+                password:'123456'
+            }
+        ]
+    }
+}
+
+const datas1 = {
+    code:300,
+    message:'错误说明文字'
+}
+
 export { orderList, userList, userAddSelect }

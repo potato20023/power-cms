@@ -1,4 +1,4 @@
-import { requestD } from '@/utils/request';
+import requestD from '../utils/request';
 
 // 获取客户管理工单分配信息
 export function getSumList() {

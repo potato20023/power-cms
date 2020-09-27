@@ -4,7 +4,7 @@ import Cookies from 'js-cookie'
 
 // 创建实例
 const requestD = axios.create({
-    baseURL: service.baseUrl,
+    baseURL: service.serviceUrl,
     timeout: 5000
 })
 
@@ -37,4 +37,4 @@ requestD.interceptors.response.use(res => {
     return Promise.reject(err)
 })
 
-export { requestD }
+export default requestD 

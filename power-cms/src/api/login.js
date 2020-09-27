@@ -1,11 +1,11 @@
-import { requestD } from '@/utils/request'
+import requestD from '../utils/request'
 
 // 用户登录
-export function LoginA(data) {
+export function toLogin(data) {
     return requestD({
-        url: '/login/login',
+        url: '/rcpmcs/system/login',
         method: 'post',
-        data: data
+        params: data
     })
 }
 // 获取用户信息详情

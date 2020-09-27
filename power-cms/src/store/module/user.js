@@ -1,4 +1,4 @@
-import { getSystem, GetUserInfo, LoginOut, LoginA } from '@/api/login'
+import { getSystem, GetUserInfo, LoginOut, toLogin } from '@/api/login'
 import { getToken, setToken, removeToken } from '@/utils/auth'
 import service from '@/utils/service'
 
@@ -33,7 +33,7 @@ const actions = {
     // 登录
     login({ commit }, data) {
         return new Promise((resolve, reject) => {
-            LoginA(data).then(res => {
+            toLogin(data).then(res => {
                 setToken(res.token)
                 return resolve(res)
             }).catch(err => {
