@@ -107,29 +107,6 @@
     <!-- 新增或编辑 -->
     <!-- <userAdd v-if="!ifList"></userAdd> -->
 
-    <el-table
-      :data='userList'
-      border
-      style='width:100%'
-    >
-      <el-table-column prop="userNum" label="用户编号" width="120"></el-table-column>
-      <el-table-column prop="userName" label="用户名"></el-table-column>
-      <el-table-column prop="phone" label="电话"></el-table-column>
-      <el-table-column prop="identityNum" label="用户身份">
-        <template slot-scope='scope'>
-          <span v-if="scope.row.identityNum == 1">超级管理员</span>
-          <span v-if="scope.row.identityNum == 2">变电站管理员</span>
-          <span v-if="scope.row.identityNum == 3">普通员工</span>
-        </template>
-      </el-table-column>
-      <el-table-column prop="createTime" label="创建时间"></el-table-column>
-      <el-table-column width="200" fixed="right" label="操作">
-        <template slot-scope="scope">
-          <el-button type="primary" size="mini" @click="handleClick(scope.row)">编辑</el-button>
-          <el-button type="danger" size="mini" @click="handleDelete(scope.row)">删除</el-button>
-        </template>
-      </el-table-column>
-    </el-table>
 
     <!-- 分页 -->
     <el-pagination
@@ -149,7 +126,6 @@
 
 <script>
 import { mapGetters } from "vuex";
-import { getUserList } from "@/api/mode";
 // import userAdd from "@/view/permission/userAdd";
 export default {
   name: "",
@@ -169,7 +145,6 @@ export default {
     // userAdd
   },
   mounted() {
-    this.getUserLists();
   },
   methods: {
     // 导出模板
@@ -233,20 +208,6 @@ export default {
       return jsonData.map(v => filterVal.map(j => v[j]));
     },
 
-    
-
-    // 获取用户信息列表
-    getUserLists() {
-      let data = {
-        offset: 1,
-        limit: 10
-      };
-      getUserList(data).then(res => {
-        if (res.code == 200) {
-          this.userList = res.data.list;
-        }
-      });
-    },
     // 选择复选框
     handleSelectionChange(val) {
       console.log(val);

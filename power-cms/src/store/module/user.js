@@ -1,4 +1,4 @@
-import { getSystem, GetUserInfo, LoginOut, toLogin } from '@/api/login'
+import { GetUserInfo, LoginOut, toLogin } from '@/api/login'
 import { getToken, setToken, removeToken } from '@/utils/auth'
 import service from '@/utils/service'
 
@@ -34,22 +34,54 @@ const actions = {
     login({ commit }, data) {
         return new Promise((resolve, reject) => {
             toLogin(data).then(res => {
-                setToken(res.token)
+                setToken(res.data.csId)
                 return resolve(res)
             }).catch(err => {
                 return reject(err)
             })
         })
     },
-    // 获取系统列表
+    // 获取用户信息
     pullUserInfo({ commit }) {
         return new Promise((resolve, reject) => {
-            getSystem().then(res => {
-                commit('SET_USERNAME', res.userName)
-                commit('SET_USERID', res.userId)
-                commit('SET_AVATAR', res.avatar)
+            let data = {csId:getToken()}
+            GetUserInfo(data).then(res => {
+                console.log('获取用户信息')
 
-                commit('SET_MENULIST', res.menuList) //用户权限列表
+                // if(res.code === 200){
+                //     commit('SET_USERNAME', res.data.csLoginName)
+                //     commit('SET_USERID', res.data.csId)
+                    let aaa = [
+                        'upms:role:read',
+                        'upms:role:create',
+                        'upms:role:update',
+                        'upms:role:delete',
+                        'upms:user:read',
+                        'upms:user:create',
+                        'upms:user:update',
+                        'upms:user:delete',
+                        'upms:menu:read',
+                        'upms:menu:create',
+                        'upms:menu:update',
+                        'upms:menu:delete',
+                        'upms:sub:read',
+                        'upms:sub:create',
+                        'upms:sub:update',
+                        'upms:sub:delete',
+                        'upms:log:read',
+                        'upms:log:create',
+                        'upms:log:update',
+                        'upms:log:delete',
+                        'upms:tableList:read',
+                        'upms:tableList:create',
+                        'upms:tableList:update',
+                        'upms:tableList:delete',
+                        'upms:tableUpload:read',
+                        'upms:map1:read'
+                    ]
+                    commit('SET_MENULIST', aaa) //用户权限列表
+                // }
+                
                 resolve(res)
             }).catch(err => {
                 reject(err)
@@ -61,6 +93,7 @@ const actions = {
         let data = getToken();
         return new Promise((resolve, reject) => {
             LoginOut(data).then(res => {
+                removeToken()
                 return resolve(res)
             })
         })

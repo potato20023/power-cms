@@ -13,7 +13,7 @@ requestD.interceptors.request.use(config => {
     // 在发送请求之前做些什么
     if (Cookies.get('auth')) {
         config.headers = {
-            'Authorization': Cookies.get('auth'),
+            // 'Authorization': Cookies.get('auth'),
             'Content-Type': 'application/json;chartset=UTF-8'
         }
     }
@@ -27,11 +27,16 @@ requestD.interceptors.request.use(config => {
 // 添加响应拦截器
 requestD.interceptors.response.use(res => {
     // 对响应数据做些什么
-    if (res.code == 99) {
-        this.$router.path('/login')
-        Cookies.set('auth', '')
-        Cookies.set('userName', '')
-    }
+    // if (res.code == 203) {
+    //     // 登录超时
+    //     this.$message({
+    //         message:'登录超时',
+    //         type:'warning'
+    //     })
+    //     this.$router.path('/login')
+    //     Cookies.set('auth', '')
+    //     Cookies.set('AdminToken', '')
+    // }
     return res.data;
 }, err => {
     return Promise.reject(err)

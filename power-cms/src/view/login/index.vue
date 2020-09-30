@@ -2,7 +2,8 @@
 <template>
   <div class="login">
     <div class="login-form">
-      <p class="title">电能集中远程管控平台</p>
+      <!-- <p class="title">电能集中远程管控平台</p> -->
+      <p class="title">demo平台</p>
       <el-form ref="loginForm" :model="loginForm" :rules="rule">
         <el-form-item prop="csLoginName">
           <el-input v-model="loginForm.csLoginName" maxlength="20" placeholder="请输入用户名"></el-input>
@@ -33,13 +34,14 @@
 <script>
 import { mapActions } from "vuex";
 import {toLogin} from '@/api/login'
+import {setToken} from '@/utils/auth'
 export default {
   data() {
     return {
       loading: false,
       loginForm: {
-        csLoginName: "",
-        csLoginPwd: ""
+        csLoginName: "admin",
+        csLoginPwd: "admin@rcpmcs"
       },
       checkValue: "",
       show_num: [],
@@ -65,47 +67,55 @@ export default {
     // 登录
     onLogin() {
       let $this = this;
-      toLogin($this.loginForm).then(res=>{
-        console.log(res)
-      })
-      // $this.$refs.loginForm.validate(valid => {
-      //   if (valid) {
-      //     // 验证码--start
-      //     let num = $this.show_num.join("");
-      //     if ($this.checkValue == "") {
-      //       $this.$message({
-      //         message: "请输入验证码！",
-      //         type: "error"
-      //       });
-      //     } else if ($this.checkValue == num) {
-      //       $this.$message({
-      //         message: "提交成功！",
-      //         type: "success"
-      //       });
-      //       // 验证成功发送登录请求
-      //       $this.loading = true;
-      //       LoginA($this.loginForm).then(res => {
-      //         if (res) {
-      //           $this.$router.push(
-      //             { path: "/index" },
-      //             onComplete => {},
-      //             onAbort => {}
-      //           );
-      //         }
-      //       });
-      //       // $this.$this.checkValue = "";
-      //       // $this.draw($this.show_num);
-      //     } else {
-      //       $this.$message({
-      //         message: "验证码错误，请输入正确的验证码！",
-      //         type: "error"
-      //       });
-      //       $this.checkValue = "";
-      //       $this.draw($this.show_num);
-      //     }
-      //     // 验证码--end
-      //   }
-      // });
+      $this.$refs.loginForm.validate(valid => {
+        if (valid) {
+            $this.login($this.loginForm).then(res => {
+              if (res.data) {
+                console.log(1111111)
+                $this.$router.push(
+                  { path: "/index" },
+                  onComplete => {},
+                  onAbort => {}
+                );
+              }
+            });
+
+          // 验证码--start
+          // let num = $this.show_num.join("");
+          // if ($this.checkValue == "") {
+          //   $this.$message({
+          //     message: "请输入验证码！",
+          //     type: "error"
+          //   });
+          // } else if ($this.checkValue == num) {
+          //   $this.$message({
+          //     message: "提交成功！",
+          //     type: "success"
+          //   });
+          //   // 验证成功发送登录请求
+          //   $this.loading = true;
+          //   toLogin($this.loginForm).then(res => {
+          //     if (res.data) {
+          //       setToken(res.data.csId);
+                
+          //       $this.$router.push(
+          //         { path: "/index" },
+          //         onComplete => {},
+          //         onAbort => {}
+          //       );
+          //     }
+          //   });
+          // } else {
+          //   $this.$message({
+          //     message: "验证码错误，请输入正确的验证码！",
+          //     type: "error"
+          //   });
+          //   $this.checkValue = "";
+          //   $this.draw($this.show_num);
+          // }
+          // 验证码--end
+        }
+      });
     },
     //得到随机的颜色值
     randomColor() {

@@ -2,7 +2,7 @@
  * @Author: chumengzhen 
  * @Date: 2020-04-22 10:21:13 
  * @Last Modified by: chumengzhen
- * @Last Modified time: 2020-04-25 10:38:05
+ * @Last Modified time: 2020-09-29 17:12:58
  * 全局权限检测，包括（路由的全局守卫）
  */
 
@@ -22,7 +22,36 @@ router.beforeEach((to, from, next) => {
             // 有token时访问非登录页
             if (store.getters.menuList.length === 0) {
                 store.dispatch('pullUserInfo').then(resp => {
-                    const menuList = resp.menuList
+                    console.log('加载路由')
+                    // const menuList = resp.menuList
+                    const menuList = [
+                        'upms:role:read',
+                        'upms:role:create',
+                        'upms:role:update',
+                        'upms:role:delete',
+                        'upms:user:read',
+                        'upms:user:create',
+                        'upms:user:update',
+                        'upms:user:delete',
+                        'upms:menu:read',
+                        'upms:menu:create',
+                        'upms:menu:update',
+                        'upms:menu:delete',
+                        'upms:sub:read',
+                        'upms:sub:create',
+                        'upms:sub:update',
+                        'upms:sub:delete',
+                        'upms:log:read',
+                        'upms:log:create',
+                        'upms:log:update',
+                        'upms:log:delete',
+                        'upms:tableList:read',
+                        'upms:tableList:create',
+                        'upms:tableList:update',
+                        'upms:tableList:delete',
+                        'upms:tableUpload:read',
+                        'upms:map1:read'
+                    ]
                     store.dispatch('GenerateRoutes', menuList).then(() => {
                         // 动态添加可访问路由表
                         router.addRoutes(store.getters.addRouters)
@@ -31,13 +60,23 @@ router.beforeEach((to, from, next) => {
                         next({...to, replace: true })
                     })
                 }).catch(() => {
-                    store.dispatch('logout').then(() => {
+                    console.log('退出')
+                    store.dispatch('loginOut').then(() => {
                         next('/login')
                     })
                 })
             } else {
                 next()
             }
+
+
+            // store.dispatch('GenerateRoutes', store.getters.menuList).then(() => {
+            //     // 动态添加可访问路由表
+            //     router.addRoutes(store.getters.addRouters)
+            //         // hack方法 确保addRoutes已完成，set the replace: true so the navigation will not leave a history record
+            //         // 这样我们就可以简单的通过 `next(to)` 巧妙的避开之前的那个问题了。这行代码重新进入 `router.beforeEach` 这个钩子，这时候再通过 `next()` 来释放钩子，就能确保所有的路由都已经挂载完成了。
+            //     next({...to, replace: true })
+            // })
 
         }
     } else {
