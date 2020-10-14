@@ -54,7 +54,7 @@
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="submitForm('ruleform')">提交</el-button>
-          <el-button @click="cancleForm('ruleform')">取消</el-button>
+          <el-button @click="resetForm('ruleform')">重置</el-button>
         </el-form-item>
       </el-form>
     </el-dialog>
@@ -104,6 +104,7 @@ export default {
         ]
       },
       dataList: [], //列表数据
+      total:0,   // 
     };
   },
   computed:{
@@ -122,7 +123,8 @@ export default {
       };
       getSubstationManagement(data).then((res) => {
         if (res.code == 200) {
-          this.dataList = res.data;
+          this.dataList = res.extend.listConvertingStation;
+          this.total = res.extend.count
         }
       });
     },
@@ -137,7 +139,14 @@ export default {
         if(valid){
           $this.formData.opuser = $this.userId
           addSubstationManagement($this.formData).then(res=>{
-            console.log(res)
+            if(res.code === 200){
+                $this.resetForm(formName);
+            }else{
+              $this.$message({
+                type:'danger',
+                message:res.message
+              })
+            }
           })
         }else{
           console.log('error submit!!')
@@ -146,7 +155,7 @@ export default {
       })
     },
     // 取消提交
-    cancleForm(formName){
+    resetForm(formName){
       this.$refs[formName].resetFields();
       this.dialogVisible = false;
     },

@@ -13,6 +13,6 @@ export function addSubstationManagement(data){
     return requestD({
         url:'/rcpmcs/station/saveConvertingStation',
         method:'post',
-        data:data
+        params:data
     })
 }
