@@ -4,7 +4,6 @@ import service from '@/utils/service'
 
 
 const state = {
-    appid: '',
     userName: '',
     userId: '',
     avatar: '',
@@ -12,9 +11,6 @@ const state = {
 }
 
 const mutations = {
-    SET_APPID: (state, res) => {
-        state.appid = res
-    },
     SET_USERNAME: (state, res) => {
         state.userName = res
     },
@@ -34,7 +30,10 @@ const actions = {
     login({ commit }, data) {
         return new Promise((resolve, reject) => {
             toLogin(data).then(res => {
-                setToken(res.data.csId)
+                setToken(res.data.p2)   // 存储token在cookie
+                sessionStorage.setItem('csId',res.data.p1)
+                commit('SET_USERNAME', res.data.csLoginName)
+                commit('SET_USERID', res.data.csId)
                 return resolve(res)
             }).catch(err => {
                 return reject(err)
@@ -44,13 +43,8 @@ const actions = {
     // 获取用户信息
     pullUserInfo({ commit }) {
         return new Promise((resolve, reject) => {
-            let data = {csId:getToken()}
-            GetUserInfo(data).then(res => {
-                console.log('获取用户信息')
-
-                // if(res.code === 200){
-                //     commit('SET_USERNAME', res.data.csLoginName)
-                //     commit('SET_USERID', res.data.csId)
+            let data = {csId:sessionStorage.getItem('csId')}
+            GetUserInfo(data).then(res => {                    
                     let aaa = [
                         'upms:role:read',
                         'upms:role:create',
@@ -80,8 +74,11 @@ const actions = {
                         'upms:map1:read'
                     ]
                     commit('SET_MENULIST', aaa) //用户权限列表
-                // }
-                
+                    if(res.code === 200){
+                        console.log('用户信息获取成功')
+                        commit('SET_USERNAME', res.data.csLoginName)
+                        commit('SET_USERID', res.data.csId)
+                    }
                 resolve(res)
             }).catch(err => {
                 reject(err)

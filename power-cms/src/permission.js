@@ -2,7 +2,7 @@
  * @Author: chumengzhen 
  * @Date: 2020-04-22 10:21:13 
  * @Last Modified by: chumengzhen
- * @Last Modified time: 2020-09-29 17:12:58
+ * @Last Modified time: 2020-10-14 14:57:57
  * 全局权限检测，包括（路由的全局守卫）
  */
 
@@ -68,16 +68,6 @@ router.beforeEach((to, from, next) => {
             } else {
                 next()
             }
-
-
-            // store.dispatch('GenerateRoutes', store.getters.menuList).then(() => {
-            //     // 动态添加可访问路由表
-            //     router.addRoutes(store.getters.addRouters)
-            //         // hack方法 确保addRoutes已完成，set the replace: true so the navigation will not leave a history record
-            //         // 这样我们就可以简单的通过 `next(to)` 巧妙的避开之前的那个问题了。这行代码重新进入 `router.beforeEach` 这个钩子，这时候再通过 `next()` 来释放钩子，就能确保所有的路由都已经挂载完成了。
-            //     next({...to, replace: true })
-            // })
-
         }
     } else {
         // 没有token时

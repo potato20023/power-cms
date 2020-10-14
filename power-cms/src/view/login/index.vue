@@ -71,7 +71,6 @@ export default {
         if (valid) {
             $this.login($this.loginForm).then(res => {
               if (res.data) {
-                console.log(1111111)
                 $this.$router.push(
                   { path: "/index" },
                   onComplete => {},

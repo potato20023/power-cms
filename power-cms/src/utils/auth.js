@@ -1,15 +1,15 @@
 import Cookies from 'js-cookie'
-const AdminToken = 'AdminToken'
+const PowerToken = 'PowerToken'
 const appid = 'App'
 
 export function getToken() {
-    return Cookies.get(AdminToken)
+    return Cookies.get(PowerToken)
 }
 export function setToken(d) {
-    return Cookies.set(AdminToken, d)
+    return Cookies.set(PowerToken, d)
 }
 export function removeToken() {
-    return Cookies.remove(AdminToken)
+    return Cookies.remove(PowerToken)
 }
 
 export function getAppid() {
