@@ -1,8 +1,9 @@
 <template>
   <div class="container">
     <h3>管理一</h3>
-    <el-button type="primary" round style="margin-bottom:20px" @click="add()">新增</el-button>
-    <el-table :data="dataList" border>
+    <p>变电站管理</p>
+    <el-button type="primary" round @click="add()">新增</el-button>
+    <el-table :data="dataList" border style="margin:20px auto">
       <el-table-column prop="stationName" label="变电站名称"></el-table-column>
       <el-table-column
         prop="stationAddress"
@@ -10,20 +11,38 @@
       ></el-table-column>
       <el-table-column prop="stationFzr" label="负责人"></el-table-column>
       <el-table-column prop="stationFzrdh" label="负责人电话"></el-table-column>
+      <el-table-column prop="status" label="状态">
+        <template slot-scope="scope">
+          <el-tag v-if="scope.row.status == 1" type="success">正常</el-tag>
+          <el-tag v-else type="danger">已删除</el-tag>
+        </template>
+      </el-table-column>
       <el-table-column prop="createTime" label="创建时间"></el-table-column>
       <el-table-column prop="upTime" label="更新时间"></el-table-column>
       <el-table-column fixed="right" label="操作" width="200px">
         <template slot-scope="scope">
-          <el-button type="primary" size="small" @click="handleClick(scope.row)">编辑</el-button>
-          <el-button type="danger" size="small" @click="deleteClick(scope.row)">删除</el-button>
+          <el-button type="primary" size="small" @click="editClick(scope.row)">编辑</el-button>
+          <el-button type="danger" size="small" @click="deleteClick(scope.row)" v-if="scope.row.status == 1">删除</el-button>
+          <el-button type="danger" size="small" disabled v-else>已删除</el-button>
         </template>
       </el-table-column>
     </el-table>
 
+    <el-pagination
+      background
+      layout="total,sizes,prev,pager,next,jumper"
+      :total="total"
+      @current-change="handleCurrentChange"
+      @size-change="handleSizeChange"
+      :page-sizes=[10,20,30,40]
+      :page-size="10"
+    ></el-pagination>
+
 
     <el-dialog
       :visible.sync="dialogVisible"
-      title="新增"
+      :title="ifAdd?'新增':'编辑'"
+      @closed="handleClosed"
     >
       <el-form
         :model="formData"
@@ -49,11 +68,12 @@
         <el-form-item label="状态" prop="status">
           <el-radio-group v-model="formData.status">
             <el-radio :label=1>正常</el-radio>
-            <el-radio :label=0>已删除</el-radio>
+            <el-radio :label=0>删除</el-radio>
           </el-radio-group>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="submitForm('ruleform')">提交</el-button>
+          <el-button v-if="ifAdd" type="primary" @click="submitForm('ruleform')">提交</el-button>
+          <el-button v-else type="primary" @click="editForm('ruleform')">提交</el-button>
           <el-button @click="resetForm('ruleform')">重置</el-button>
         </el-form-item>
       </el-form>
@@ -62,20 +82,23 @@
 </template>
 
 <script>
-import { getSubstationManagement,addSubstationManagement } from "@/api/mode";
+import { getSubstationManagement,addSubstationManagement,updateSubstationManagement,deleteSubstationManagement } from "@/api/mode";
 import { mapGetters } from 'vuex'
+import qs from 'qs'
 export default {
   name: "",
   data() {
     return {
       dialogVisible:false,
+      ifAdd:true,
       formData:{
+        id:'',    // 变电站id
         stationName: "",   //变电站名称
         stationAddress: "",    //变电站地址
         stationFzr: "",       //负责人
         stationFzrdh: "",     //负责人电话
         level: "",   //所属等级
-        opuser: 1,   //操作人id
+        opuser: 0,   //操作人id
         status: 1    //状态：1-正常，0-删除
       },
       rules:{
@@ -95,16 +118,18 @@ export default {
           {required:true,message:'请输入负责人电话',trigger:'blur'},
           {min:8,max:15,message:'请输入正确的电话，长度在8~15个字符',trigger:'blur'}
         ],
-        level:[
-          {required:true,message:'请输入所属等级',trigger:'blur'},
-          {min:1,max:5,message:'长度在1~5个字符',trigger:'blur'}
-        ],
+        // level:[
+        //   {required:true,message:'请输入所属等级',trigger:'blur'},
+        //   {min:1,max:5,message:'长度在1~5个字符',trigger:'blur'}
+        // ],
         status:[
           {required:true,message:'请选择状态',trigger:'blur'}
         ]
       },
       dataList: [], //列表数据
-      total:0,   // 
+      total:0,   // 信息总条数
+      page:1,  // 页数
+      rows:10,  // 每页几条
     };
   },
   computed:{
@@ -118,8 +143,8 @@ export default {
     // 获取列表数据
     getList() {
       let data = {
-        page: 1, // 页数
-        rows: 10, // 每页几条数据
+        page: this.page, // 页数
+        rows: this.rows // 每页几条数据
       };
       getSubstationManagement(data).then((res) => {
         if (res.code == 200) {
@@ -130,9 +155,10 @@ export default {
     },
     // 新增
     add(){
+      this.ifAdd = true
       this.dialogVisible = true
     },
-    // 提交
+    // 提交（新增）
     submitForm(formName){
       let $this = this
       $this.$refs[formName].validate((valid)=>{
@@ -140,13 +166,20 @@ export default {
           $this.formData.opuser = $this.userId
           addSubstationManagement($this.formData).then(res=>{
             if(res.code === 200){
-                $this.resetForm(formName);
+              $this.$message({
+                type:'success',
+                message:res.message
+              })
+              $this.getList();
             }else{
               $this.$message({
                 type:'danger',
                 message:res.message
               })
             }
+            $this.resetForm('ruleform');
+            $this.dialogVisible = false;
+            $this.ifAdd = true;
           })
         }else{
           console.log('error submit!!')
@@ -154,13 +187,103 @@ export default {
         }
       })
     },
-    // 取消提交
+    // 提交（编辑）
+    editForm(formName){
+      let $this = this
+      $this.$refs[formName].validate((valid)=>{
+        if(valid){
+          updateSubstationManagement($this.formData).then(res=>{
+            if(res.code === 200){
+                $this.$message({
+                  type:'success',
+                  message:res.message
+                })
+                $this.getList();
+            }else{
+              $this.$message({
+                type:'danger',
+                message:res.message
+              })
+            }
+            $this.resetForm('ruleform');
+            $this.dialogVisible = false;
+            $this.ifAdd = true;
+          })
+        }else{
+          console.log('error submit!!')
+          return false
+        }
+      })
+    },
+    // 重置
     resetForm(formName){
       this.$refs[formName].resetFields();
-      this.dialogVisible = false;
     },
+    // 关闭弹窗
+    handleClosed(){
+      this.resetForm('ruleform')
+      this.ifAdd = true
+    },
+    // 编辑
+    editClick(e){
+      this.ifAdd = false;
+      this.dialogVisible = true;
+      console.log(e)
+      this.formData.stationName = e.stationName
+      this.formData.stationAddress = e.stationAddress
+      this.formData.stationFzr = e.stationFzr
+      this.formData.stationFzrdh = e.stationFzrdh
+      this.formData.level = e.level
+      this.formData.status = e.status
+      this.formData.id = e.id
+    },
+    // 删除
+    deleteClick(e){
+      this.$confirm('确定删除此变电站信息吗？','提示',{
+        confirmButtonText:'确定',
+        cancelButtonText:'取消',
+        type:'warning'
+      }).then(()=>{
+        let data = {
+          id:e.id
+        }
+        deleteSubstationManagement(data).then(res=>{
+          if(res.code === 200){
+            this.$message({
+              type:'success',
+              message:'删除成功'
+            })
+          }else{
+            this.$message({
+              type:'wraning',
+              message:'删除失败'
+            })
+          }
+          this.getList();
+        })
+      }).catch(()=>{
+        this.$message({
+          type:'info',
+          message:'已取消删除'
+        })
+      })
+    },
+    // 分页
+    handleCurrentChange(val){
+      this.page = val
+    },
+    handleSizeChange(val){
+      this.rows = val
+    }
   },
-  watch: {},
+  watch: {
+    page(res){
+      this.getList();
+    },
+    rows(res){
+      this.getList();
+    }
+  },
 };
 </script>
 <style lang='scss' scoped>

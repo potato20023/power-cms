@@ -86,12 +86,12 @@ export const asyncRouterMap = [
                 hidden: false
             },
             {
-                path: 'log',
+                path: 'line',
                 name: '管理二',
                 component: () =>
-                    import ('@/view/richTextEditor/wangeditor'),
+                    import ('@/view/substation/lineManagement'),
                 meta: { title: '管理二', icon: 'icon-box' },
-                menu: 'upms:log:read',
+                menu: 'upms:line:read',
                 hidden: false
             }
         ]
