@@ -17,8 +17,8 @@
           <el-tag v-else type="danger">已删除</el-tag>
         </template>
       </el-table-column>
-      <el-table-column prop="createTime" label="创建时间"></el-table-column>
-      <el-table-column prop="upTime" label="更新时间"></el-table-column>
+      <el-table-column prop="createTimeStr" label="创建时间"></el-table-column>
+      <el-table-column prop="upTimeStr" label="更新时间"></el-table-column>
       <el-table-column fixed="right" label="操作" width="200px">
         <template slot-scope="scope">
           <el-button type="primary" size="small" @click="editClick(scope.row)">编辑</el-button>
