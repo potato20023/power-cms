@@ -11,9 +11,15 @@
     >
       <el-table-column label="线路名称" prop="lineName"></el-table-column>
       <el-table-column label="线路等级" prop="lineLevel"></el-table-column>
+      <el-table-column label="隶属变电站" prop="stationName"></el-table-column>
       <el-table-column label="创建时间" prop="createTimeStr"></el-table-column>
       <el-table-column label="更新时间" prop="upTimeStr"></el-table-column>
-      <el-table-column label="状态" prop="status"></el-table-column>
+      <el-table-column label="状态" prop="status">
+        <template slot-scope="scope">
+          <el-tag type="success" v-if="scope.row.status == 1">正常</el-tag>
+          <el-tag type="danger" v-else>已删除</el-tag>
+        </template>
+      </el-table-column>
       <el-table-column label="操作" fixed="right" width="200px">
         <template slot-scope="scope">
           <el-button type="primary" size="small" @click="editOne(scope.row)">编辑</el-button>
@@ -36,14 +42,14 @@
           <el-input type="text" v-model="formData.lineLevel" placeholder="请输入线路等级" maxlength="5"></el-input>
         </el-form-item>
         <el-form-item label="所属变电站" prop="stationId">
-          <el-select v-model="formData.stationId">
+          <el-select v-model="formData.stationId" :disabled="ifAdd?false:true">
             <el-option v-for="(item,index) in subList" :key="index" :label="item.stationName" :value="item.id"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="状态" prop="status">
           <el-radio-group v-model="formData.status">
             <el-radio :label=1>正常</el-radio>
-            <el-radio :label=0>已删除</el-radio>
+            <el-radio :label=0>删除</el-radio>
           </el-radio-group>
         </el-form-item>
         <el-form-item>
@@ -69,19 +75,23 @@ import {mapGetters} from 'vuex'
             lineName:'',
             lineLevel:'',
             stationId:'',
-            status:1
+            status:1,
+            opuser:0
           },
           rules:{
             lineName:[
               {required:true,message:'请输入线路名称',trigger:'blur'},
               {min:3,max:20,message:'长度在3~20个字符',trigger:'blur'}
             ],
-            lineLevel:[
-              {required:true,message:'请输入线路等级',trigger:'blur'},
-              {min:1,max:5,message:'字符长度为 1~5',trigger:'blur'}
-            ],
+            // lineLevel:[
+            //   {required:true,message:'请输入线路等级',trigger:'blur'},
+            //   {min:1,max:5,message:'字符长度为 1~5',trigger:'blur'}
+            // ],
             stationId:[
               {required:true,message:'请选择变电站',trigger:'blur'}
+            ],
+            status:[
+              {required:true,message:'请选择状态',trigger:'blur'}
             ]
           },
           dataList:[],  // 线路列表
@@ -134,37 +144,91 @@ import {mapGetters} from 'vuex'
         editOne(e){
           this.dialogVisible = true;
           this.ifAdd = false;
+          this.getSubList();
           this.formData.lineName = e.lineName
           this.formData.lineLevel = e.lineLevel
           this.formData.stationId = e.stationId
           this.formData.status = e.status
+          this.formData.opuser = e.opuser
           this.formData.id = e.id
         },
         // 提交（新增）
         submitForm(formName){
           let $this = this;
           $this.$refs[formName].validate((valid)=>{
-            $this.formData.opuser = $this.userId
             if(valid){
+              console.log($this.formData)
               addLineManagement($this.formData).then(res=>{
                 if(res.code == 200){
                   $this.$message({
                     type:'success',
                     message:'添加成功'
                   })
+                  $this.getList();
                 }else{
                   $this.$message({
                     type:'danger',
                     message:res.message
                   })
                 }
+                $this.resetForm('ruleform')
+                $this.dialogVisible = false
+                $this.ifAdd = true
               })
             }
           })
         },
         // 提交（编辑）
         editForm(formName){
-
+          let $this = this;
+          console.log($this.formData)
+          $this.$refs[formName].validate((valid)=>{
+            if(valid){
+              updateLineManagement($this.formData).then(res=>{
+                if(res.code == 200){
+                  $this.$message({
+                    type:'success',
+                    message:'编辑成功'
+                  })
+                  $this.getList();
+                }else{
+                  $this.$message({
+                    type:'danger',
+                    message:res.message
+                  })
+                }
+                $this.resetForm('ruleform');
+              $this.dialogVisible = false;
+              $this.ifAdd = true;
+              })
+            }
+          })
+        },
+        // 删除
+        deleteOne(e){
+          this.$confirm('是否删除此线路','提示',{
+            confirmButtonText:'确定',
+            cancelButtonText:'取消',
+            type:'warning'
+          }).then(()=>{
+            let data = {
+              id:e.id
+            }
+            deleteLineManagement(data).then(res=>{
+              if(res.code == 200){
+                this.$message({
+                  type:'success',
+                  message:'删除成功'
+                })
+              }
+            })
+            this.getList();
+          }).catch(()=>{
+            this.$message({
+              type:'info',
+              message:res.message
+            })
+          })
         },
         // 重置
         resetForm(formName){
