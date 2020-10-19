@@ -5,6 +5,7 @@ const getters = {
     userId: state => state.user.userId,
     avatar: state => state.user.avatar,
     menuList: state => state.user.menuList, // 系统权限列表
+    csType: state => state.user.csType,   // 权限
 
     // 左侧折叠面板路由
     routers: state => state.permission.routers,

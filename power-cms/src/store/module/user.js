@@ -8,6 +8,7 @@ const state = {
     userId: '',
     avatar: '',
     menuList: [], //用户权限列表
+    csType:1    // 权限1是超级管理员 2是普通用户，普通用户只能‘看’不能‘增删改’
 }
 
 const mutations = {
@@ -22,6 +23,9 @@ const mutations = {
     },
     SET_MENULIST: (state, res) => {
         state.menuList = res
+    },
+    SET_CSTYPE:(state,res)=>{
+        state.csType = res
     }
 }
 
@@ -34,6 +38,7 @@ const actions = {
                 sessionStorage.setItem('csId',res.data.p1)
                 commit('SET_USERNAME', res.data.csLoginName)
                 commit('SET_USERID', res.data.csId)
+                commit('SET_CSTYPE',res.data.csType)   //权限
                 return resolve(res)
             }).catch(err => {
                 return reject(err)
@@ -66,6 +71,10 @@ const actions = {
                         'upms:line:create',
                         'upms:line:update',
                         'upms:line:delete',
+                        'upms:collector:read',
+                        'upms:collector:create',
+                        'upms:collector:update',
+                        'upms:collector:delete',
                         'upms:tableList:read',
                         'upms:tableList:create',
                         'upms:tableList:update',
@@ -78,6 +87,7 @@ const actions = {
                         console.log('用户信息获取成功')
                         commit('SET_USERNAME', res.data.csLoginName)
                         commit('SET_USERID', res.data.csId)
+                        commit('SET_CSTYPE',res.data.csType)   //权限
                     }
                 resolve(res)
             }).catch(err => {

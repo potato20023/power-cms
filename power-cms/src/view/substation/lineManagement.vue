@@ -2,7 +2,7 @@
   <div class="container">
     <h3>管理二</h3>
     <p>线路管理</p>
-    <el-button type="primary" round @click="add()">新增</el-button>
+    <el-button v-if="csType == 1" type="primary" round @click="add()">新增</el-button>
 
     <el-table
       :data="dataList"
@@ -22,40 +22,50 @@
       </el-table-column>
       <el-table-column label="操作" fixed="right" width="200px">
         <template slot-scope="scope">
-          <el-button type="primary" size="small" @click="editOne(scope.row)">编辑</el-button>
-          <el-button type="danger" size="small" @click="deleteOne(scope.row)" v-if="scope.row.status == 1">删除</el-button>
+          <el-button v-if="csType == 1" type="primary" size="small" @click="editOne(scope.row)">编辑</el-button>
+          <el-button type="danger" size="small" @click="deleteOne(scope.row)" v-if="scope.row.status == 1 && csType == 1">删除</el-button>
           <el-button type="danger" size="small" disabled v-else>已删除</el-button>
         </template>
       </el-table-column>
     </el-table>
+
+    <el-pagination
+      background
+      layout="total,sizes,prev,pager,next,jumper"
+      :total="total"
+      @current-change="handleCurrentChange"
+      @size-change="handleSizeChange"
+      :page-sizes=[10,20,30,40]
+      :page-size="10"
+    ></el-pagination>
 
     <el-dialog
       :visible.sync="dialogVisible"
       @closed="handleClosed"
       :title="ifAdd?'新增':'编辑'"
     >
-      <el-form ref="ruleform" :model="formData" :rules="rules" label-width="100px">
+      <el-form ref="lineRuleform" :model="lineFormData" :rules="rules" label-width="100px">
         <el-form-item label="线路名称" prop="lineName">
-          <el-input type="text" v-model="formData.lineName" placeholder="请输入线路名称" maxlength="21"></el-input>
+          <el-input type="text" v-model="lineFormData.lineName" placeholder="请输入线路名称" maxlength="21"></el-input>
         </el-form-item>
         <el-form-item label="线路等级" prop="lineLevel">
-          <el-input type="text" v-model="formData.lineLevel" placeholder="请输入线路等级" maxlength="5"></el-input>
+          <el-input type="text" v-model="lineFormData.lineLevel" placeholder="请输入线路等级" maxlength="5"></el-input>
         </el-form-item>
         <el-form-item label="所属变电站" prop="stationId">
-          <el-select v-model="formData.stationId" :disabled="ifAdd?false:true">
+          <el-select v-model="lineFormData.stationId" :disabled="ifAdd?false:true">
             <el-option v-for="(item,index) in subList" :key="index" :label="item.stationName" :value="item.id"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="状态" prop="status">
-          <el-radio-group v-model="formData.status">
+          <el-radio-group v-model="lineFormData.status">
             <el-radio :label=1>正常</el-radio>
             <el-radio :label=0>删除</el-radio>
           </el-radio-group>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="submitForm('ruleform')" v-if="ifAdd">提交</el-button>
-          <el-button type="primary" @click="editForm('ruleform')" v-else>提交</el-button>
-          <el-button @click="resetForm('ruleform')">重置</el-button>
+          <el-button type="primary" @click="submitForm('lineRuleform')" v-if="ifAdd">提交</el-button>
+          <el-button type="primary" @click="editForm('lineRuleform')" v-else>提交</el-button>
+          <el-button @click="resetForm('lineRuleform')">重置</el-button>
         </el-form-item>
       </el-form>
     </el-dialog>
@@ -71,7 +81,7 @@ import {mapGetters} from 'vuex'
       return {
           dialogVisible:false,
           ifAdd:true,
-          formData:{
+          lineFormData:{
             lineName:'',
             lineLevel:'',
             stationId:'',
@@ -81,7 +91,7 @@ import {mapGetters} from 'vuex'
           rules:{
             lineName:[
               {required:true,message:'请输入线路名称',trigger:'blur'},
-              {min:3,max:20,message:'长度在3~20个字符',trigger:'blur'}
+              {min:2,max:20,message:'长度在2~20个字符',trigger:'blur'}
             ],
             // lineLevel:[
             //   {required:true,message:'请输入线路等级',trigger:'blur'},
@@ -102,7 +112,7 @@ import {mapGetters} from 'vuex'
       };                                                               
     },
     computed:{
-      ...mapGetters(['userId'])
+      ...mapGetters(['userId','csType'])
     },
     components: {},
     mounted() {
@@ -145,20 +155,20 @@ import {mapGetters} from 'vuex'
           this.dialogVisible = true;
           this.ifAdd = false;
           this.getSubList();
-          this.formData.lineName = e.lineName
-          this.formData.lineLevel = e.lineLevel
-          this.formData.stationId = e.stationId
-          this.formData.status = e.status
-          this.formData.opuser = e.opuser
-          this.formData.id = e.id
+          this.lineFormData.lineName = e.lineName
+          this.lineFormData.lineLevel = e.lineLevel
+          this.lineFormData.stationId = e.stationId
+          this.lineFormData.status = e.status
+          this.lineFormData.opuser = e.opuser
+          this.lineFormData.id = e.id
         },
         // 提交（新增）
         submitForm(formName){
           let $this = this;
           $this.$refs[formName].validate((valid)=>{
             if(valid){
-              console.log($this.formData)
-              addLineManagement($this.formData).then(res=>{
+              console.log($this.lineFormData)
+              addLineManagement($this.lineFormData).then(res=>{
                 if(res.code == 200){
                   $this.$message({
                     type:'success',
@@ -171,7 +181,7 @@ import {mapGetters} from 'vuex'
                     message:res.message
                   })
                 }
-                $this.resetForm('ruleform')
+                $this.resetForm('lineRuleform')
                 $this.dialogVisible = false
                 $this.ifAdd = true
               })
@@ -181,10 +191,10 @@ import {mapGetters} from 'vuex'
         // 提交（编辑）
         editForm(formName){
           let $this = this;
-          console.log($this.formData)
+          console.log($this.lineFormData)
           $this.$refs[formName].validate((valid)=>{
             if(valid){
-              updateLineManagement($this.formData).then(res=>{
+              updateLineManagement($this.lineFormData).then(res=>{
                 if(res.code == 200){
                   $this.$message({
                     type:'success',
@@ -197,7 +207,7 @@ import {mapGetters} from 'vuex'
                     message:res.message
                   })
                 }
-                $this.resetForm('ruleform');
+                $this.resetForm('lineRuleform');
               $this.dialogVisible = false;
               $this.ifAdd = true;
               })
@@ -233,14 +243,33 @@ import {mapGetters} from 'vuex'
         // 重置
         resetForm(formName){
           this.$refs[formName].resetFields();
+          this.lineFormData.lineName = ''
+          this.lineFormData.lineLevel = ''
+          this.lineFormData.status = 1
         },
         // 弹窗关闭
         handleClosed(){
-          this.resetForm('ruleform');
+          this.resetForm('lineRuleform');
           this.ifAdd = true;
+          this.lineFormData.stationId = ''
+          this.lineFormData.opuser = ''
+          this.lineFormData.id = ''
         },
+        handleCurrentChange(val){
+          this.page = val
+        },
+        handleSizeChange(val){
+          this.rows = val
+        }
     },
-    watch: {}
+    watch: {
+      page(res){
+        this.getList()
+      },
+      rows(res){
+        this.getList()
+      }
+    }
   }
 
 </script>

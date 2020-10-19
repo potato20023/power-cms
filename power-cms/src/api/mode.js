@@ -1,5 +1,38 @@
 import requestD from '../utils/request';
 
+// 获取用户列表
+export function getUserList(data){
+    return requestD({
+        url:'/rcpmcs/user/listSystemUser',
+        method:'post',
+        params:data
+    })
+}
+// 新增用户
+export function addUser(data){
+    return requestD({
+        url:'/rcpmcs/user/saveSystemUser',
+        method:'post',
+        params:data
+    })
+}
+// 编辑用户
+export function updateUser(data){
+    return requestD({
+        url:'/rcpmcs/user/updateSystemUser',
+        method:'post',
+        params:data
+    })
+}
+// 删除用户
+export function deleteUser(data){
+    return requestD({
+        url:'/rcpmcs/user/opSystemUser',
+        method:'post',
+        params:data
+    })
+}
+
 // 获取变电站列表
 export function getSubstationManagement(data){
     return requestD({
@@ -61,6 +94,39 @@ export function updateLineManagement(data){
 export function deleteLineManagement(data){
     return requestD({
         url:'/rcpmcs/station/deleteStationLine',
+        method:'post',
+        params:data
+    })
+}
+
+// 获取线路列表
+export function getCollectorManagement(data){
+    return requestD({
+        url:'/rcpmcs/station/listStationCollector',
+        method:'post',
+        params:data
+    })
+}
+// 新增线路
+export function addCollectorManagement(data){
+    return requestD({
+        url:'/rcpmcs/station/saveStationCollector',
+        method:'post',
+        params:data
+    })
+}
+// 编辑线路
+export function updateCollectorManagement(data){
+    return requestD({
+        url:'/rcpmcs/station/updateStationCollector',
+        method:'post',
+        params:data
+    })
+}
+// 删除线路
+export function deleteCollectorManagement(data){
+    return requestD({
+        url:'/rcpmcs/station/deleteStationCollector',
         method:'post',
         params:data
     })

@@ -1,29 +1,33 @@
 <template>
   <div class="container">
-    <h3>管理一</h3>
-    <p>变电站管理</p>
+    <h3>用户管理</h3>
     <el-button v-if="csType == 1" type="primary" round @click="add()">新增</el-button>
     <el-table :data="dataList" border style="margin:20px auto">
-      <el-table-column prop="stationName" label="变电站名称"></el-table-column>
-      <el-table-column
-        prop="stationAddress"
-        label="变电站地址"
-      ></el-table-column>
-      <el-table-column prop="stationFzr" label="负责人"></el-table-column>
-      <el-table-column prop="stationFzrdh" label="负责人电话"></el-table-column>
+      <el-table-column prop="csLoginName" label="账号"></el-table-column>
+      <el-table-column prop="csName" label="姓名"></el-table-column>
+      <el-table-column prop="csPhone" label="电话"></el-table-column>
+      <el-table-column prop="csType" label="用户身份">
+        <template slot-scope="scope">
+          <el-tag v-if="scope.row.csType == 1" type="success">超级管理员</el-tag>
+          <el-tag v-else type="primary">普通用户</el-tag>
+        </template>
+      </el-table-column>
       <el-table-column prop="status" label="状态">
         <template slot-scope="scope">
           <el-tag v-if="scope.row.status == 1" type="success">正常</el-tag>
-          <el-tag v-else type="danger">已删除</el-tag>
+          <el-tag v-if="scope.row.status == 2" type="permary">已冻结</el-tag>
+          <el-tag v-if="scope.row.status == 3" type="danger">已删除</el-tag>
         </template>
       </el-table-column>
       <el-table-column prop="createTimeStr" label="创建时间"></el-table-column>
       <el-table-column prop="upTimeStr" label="更新时间"></el-table-column>
-      <el-table-column fixed="right" label="操作" width="200px">
+      <el-table-column fixed="right" label="操作" width="250px"  v-if="csType == 1">
         <template slot-scope="scope">
-          <el-button v-if="csType == 1" type="primary" size="small" @click="editClick(scope.row)">编辑</el-button>
-          <el-button type="danger" size="small" @click="deleteClick(scope.row)" v-if="scope.row.status == 1 && csType == 1">删除</el-button>
-          <el-button type="danger" size="small" disabled v-else>已删除</el-button>
+          <el-button type="primary" size="small" @click="editClick(scope.row)">编辑</el-button>
+          <el-button type="info" size="small" @click="deleteClick(scope.row,2)" v-if="scope.row.status == 1">冻结</el-button>
+          <el-button type="warning" size="small" @click="deleteClick(scope.row,1)" v-if="scope.row.status == 2">激活</el-button>
+          <el-button type="danger" size="small" @click="deleteClick(scope.row,3)" v-if="scope.row.status != 3">删除</el-button>
+          <el-button type="danger" size="small" @click="deleteClick(scope.row)" v-else disabled>已删除</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -50,25 +54,23 @@
         ref="ruleform"
         :rules="rules"
       >
-        <el-form-item label="变电站名称" prop="stationName">
-          <el-input type="text" v-model="formData.stationName" maxlength="21" placeholder="请输入变电站名称"></el-input>
+      <el-form-item label="姓名" prop="csName">
+          <el-input type="text" v-model="formData.csName" maxlength="11" placeholder="请输入姓名"></el-input>
+          </el-form-item>
+        <el-form-item label="账号" prop="csLoginName">
+          <el-input type="text" v-model="formData.csLoginName" maxlength="11" placeholder="请输入账号" :disabled="ifAdd?false:true"></el-input>
         </el-form-item>
-        <el-form-item label="变电站地址" prop="stationAddress">
-          <el-input type="text" v-model="formData.stationAddress" maxlength="101" placeholder="请输入变电站地址"></el-input>
+        <el-form-item label="密码" prop="csLoginPwd">
+          <el-input type="text" v-model="formData.csLoginPwd" maxlength="11" placeholder="请输入账号"></el-input>
         </el-form-item>
-        <el-form-item label="负责人" prop="stationFzr">
-          <el-input type="text" v-model="formData.stationFzr" maxlength="11" placeholder="请输入负责人"></el-input>
+        
+        <el-form-item label="电话" prop="csPhone">
+          <el-input v-model="formData.csPhone" maxlength="16" placeholder="请输入负责人电话"></el-input>
         </el-form-item>
-        <el-form-item label="负责人电话" prop="stationFzrdh">
-          <el-input v-model="formData.stationFzrdh" maxlength="16" placeholder="请输入负责人电话"></el-input>
-        </el-form-item>
-        <el-form-item label="等级" prop="level">
-          <el-input v-model="formData.level" maxlength="6" placeholder="请输入等级"></el-input>
-        </el-form-item>
-        <el-form-item label="状态" prop="status">
-          <el-radio-group v-model="formData.status">
-            <el-radio :label=1>正常</el-radio>
-            <el-radio :label=0>删除</el-radio>
+        <el-form-item label="身份" prop="csType">
+          <el-radio-group v-model="formData.csType">
+            <el-radio :label=1>超级管理员</el-radio>
+            <el-radio :label=2>普通用户</el-radio>
           </el-radio-group>
         </el-form-item>
         <el-form-item>
@@ -82,8 +84,9 @@
 </template>
 
 <script>
-import { getSubstationManagement,addSubstationManagement,updateSubstationManagement,deleteSubstationManagement } from "@/api/mode";
+import { getUserList,addUser,updateUser,deleteUser } from "@/api/mode";
 import { mapGetters } from 'vuex'
+import md5 from 'js-md5'
 import qs from 'qs'
 export default {
   name: "",
@@ -92,37 +95,28 @@ export default {
       dialogVisible:false,
       ifAdd:true,
       formData:{
-        id:'',    // 变电站id
-        stationName: "",   //变电站名称
-        stationAddress: "",    //变电站地址
-        stationFzr: "",       //负责人
-        stationFzrdh: "",     //负责人电话
-        level: "",   //所属等级
+        // csId:'',    // 用户id
+        csLoginName: "",   //账号
+        csLoginPwd:'',   // 密码
+        csName: "",    //用户名
+        csPhone: "",    //电话
+        csType: 1,     //用户身份
         opuser: 0,   //操作人id
-        status: 1    //状态：1-正常，0-删除
       },
       rules:{
-        stationName:[
-          {required:true,message:'请输入变电站名称',trigger:'blur'},
-          {min:2,max:20,message:'长度在2~20个字符',trigger:'blur'}
-        ],
-        stationAddress:[
-          {required:true,message:'请输入变电站地址',trigger:'blur'},
-          {min:5,max:100,message:'长度在5~100个字符',trigger:'blur'}
-        ],
-        stationFzr:[
-          {required:true,message:'请输入负责人',trigger:'blur'},
+        csLoginName:[
+          {required:true,message:'请输入账号',trigger:'blur'},
           {min:2,max:10,message:'长度在2~10个字符',trigger:'blur'}
         ],
-        stationFzrdh:[
-          {required:true,message:'请输入负责人电话',trigger:'blur'},
-          {min:8,max:15,message:'请输入正确的电话，长度在8~15个字符',trigger:'blur'}
+        csName:[
+          {required:true,message:'请输入姓名',trigger:'blur'},
+          {min:2,max:10,message:'长度在2~10个字符',trigger:'blur'}
         ],
-        // level:[
-        //   {required:true,message:'请输入所属等级',trigger:'blur'},
-        //   {min:1,max:5,message:'长度在1~5个字符',trigger:'blur'}
-        // ],
-        status:[
+        csLoginPwd:[
+          {required:true,message:'请输入密码',trigger:'blur'},
+          {min:6,max:20,message:'请输入正确的密码，长度在6~20个字符',trigger:'blur'}
+        ],
+        csType:[
           {required:true,message:'请选择状态',trigger:'blur'}
         ]
       },
@@ -142,13 +136,15 @@ export default {
   methods: {
     // 获取列表数据
     getList() {
+        // console.log(md5('admin'))
+        // console.log(md5('21232f297a57a5a743894a0e4a801fc3'))
       let data = {
         page: this.page, // 页数
         rows: this.rows // 每页几条数据
       };
-      getSubstationManagement(data).then((res) => {
+      getUserList(data).then((res) => {
         if (res.code == 200) {
-          this.dataList = res.extend.listConvertingStation;
+          this.dataList = res.extend.listSystemUser;
           this.total = res.extend.count
         }
       });
@@ -164,7 +160,7 @@ export default {
       $this.$refs[formName].validate((valid)=>{
         if(valid){
           $this.formData.opuser = $this.userId
-          addSubstationManagement($this.formData).then(res=>{
+          addUser($this.formData).then(res=>{
             if(res.code === 200){
               $this.$message({
                 type:'success',
@@ -192,7 +188,7 @@ export default {
       let $this = this
       $this.$refs[formName].validate((valid)=>{
         if(valid){
-          updateSubstationManagement($this.formData).then(res=>{
+          updateUser($this.formData).then(res=>{
             if(res.code === 200){
                 $this.$message({
                   type:'success',
@@ -218,42 +214,43 @@ export default {
     // 重置
     resetForm(formName){
       this.$refs[formName].resetFields();
-      this.formData.stationName = ''
-      this.formData.stationAddress = ''
-      this.formData.stationFzr = ''
-      this.formData.stationFzrdh = ''
-      this.formData.level = ''
-      this.formData.status = 1
+      this.formData.csLoginName = ''
+      this.formData.csName = ''
+      this.formData.csLoginPwd = ''
+      this.formData.csPhone = ''
+      this.formData.csType = ''
+      
     },
     // 关闭弹窗
     handleClosed(){
       this.resetForm('ruleform')
       this.ifAdd = true
+      this.formData.csId = ''
+      this.formData.opuser = ''     
     },
     // 编辑
     editClick(e){
       this.ifAdd = false;
       this.dialogVisible = true;
-      console.log(e)
-      this.formData.stationName = e.stationName
-      this.formData.stationAddress = e.stationAddress
-      this.formData.stationFzr = e.stationFzr
-      this.formData.stationFzrdh = e.stationFzrdh
-      this.formData.level = e.level
-      this.formData.status = e.status
-      this.formData.id = e.id
+      this.formData.csLoginName = e.csLoginName
+      this.formData.csName = e.csName
+      this.formData.csLoginPwd = e.csLoginPwd
+      this.formData.csPhone = e.csPhone
+      this.formData.csType = e.csType
+      this.formData.csId = e.csId
     },
     // 删除
-    deleteClick(e){
-      this.$confirm('确定删除此变电站信息吗？','提示',{
-        confirmButtonText:'确定',
+    deleteClick(e,status){
+      this.$confirm('确定修改状态吗？','提示',{
+        confirmButtonText:"确定",
         cancelButtonText:'取消',
         type:'warning'
       }).then(()=>{
         let data = {
-          id:e.id
+          csId:e.csId,
+          status:status
         }
-        deleteSubstationManagement(data).then(res=>{
+         deleteUser(data).then(res=>{
           if(res.code === 200){
             this.$message({
               type:'success',
@@ -273,6 +270,8 @@ export default {
           message:'已取消删除'
         })
       })
+
+     
     },
     // 分页
     handleCurrentChange(val){

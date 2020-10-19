@@ -1,16 +1,12 @@
 <template>
   <div class="container">
-    <h3>管理一</h3>
-    <p>变电站管理</p>
+    <h3>管理三</h3>
+    <p>采集器管理</p>
     <el-button v-if="csType == 1" type="primary" round @click="add()">新增</el-button>
     <el-table :data="dataList" border style="margin:20px auto">
-      <el-table-column prop="stationName" label="变电站名称"></el-table-column>
-      <el-table-column
-        prop="stationAddress"
-        label="变电站地址"
-      ></el-table-column>
-      <el-table-column prop="stationFzr" label="负责人"></el-table-column>
-      <el-table-column prop="stationFzrdh" label="负责人电话"></el-table-column>
+      <el-table-column prop="seriaNumber" label="序列号" width="100px"></el-table-column>
+      <el-table-column prop="collectorName" label="采集器名称"></el-table-column>
+      <el-table-column prop="collectorName" label="所属变电站"></el-table-column>
       <el-table-column prop="status" label="状态">
         <template slot-scope="scope">
           <el-tag v-if="scope.row.status == 1" type="success">正常</el-tag>
@@ -50,20 +46,16 @@
         ref="ruleform"
         :rules="rules"
       >
-        <el-form-item label="变电站名称" prop="stationName">
-          <el-input type="text" v-model="formData.stationName" maxlength="21" placeholder="请输入变电站名称"></el-input>
+        <el-form-item label="采集器名称" prop="collectorName">
+          <el-input type="text" v-model="formData.collectorName" maxlength="21" placeholder="请输入采集器名称"></el-input>
         </el-form-item>
-        <el-form-item label="变电站地址" prop="stationAddress">
-          <el-input type="text" v-model="formData.stationAddress" maxlength="101" placeholder="请输入变电站地址"></el-input>
+        <el-form-item label="序列号" prop="seriaNumber">
+          <el-input type="text" v-model="formData.seriaNumber" maxlength="11" placeholder="请输入序列号"></el-input>
         </el-form-item>
-        <el-form-item label="负责人" prop="stationFzr">
-          <el-input type="text" v-model="formData.stationFzr" maxlength="11" placeholder="请输入负责人"></el-input>
-        </el-form-item>
-        <el-form-item label="负责人电话" prop="stationFzrdh">
-          <el-input v-model="formData.stationFzrdh" maxlength="16" placeholder="请输入负责人电话"></el-input>
-        </el-form-item>
-        <el-form-item label="等级" prop="level">
-          <el-input v-model="formData.level" maxlength="6" placeholder="请输入等级"></el-input>
+        <el-form-item label="所属变电站" prop="stationId">
+          <el-select v-model="formData.stationId" :disabled="ifAdd?false:true">
+            <el-option v-for="(item,index) in subList" :key="index" :label="item.stationName" :value="item.id"></el-option>
+          </el-select>
         </el-form-item>
         <el-form-item label="状态" prop="status">
           <el-radio-group v-model="formData.status">
@@ -82,7 +74,7 @@
 </template>
 
 <script>
-import { getSubstationManagement,addSubstationManagement,updateSubstationManagement,deleteSubstationManagement } from "@/api/mode";
+import { getCollectorManagement,addCollectorManagement,updateCollectorManagement,deleteCollectorManagement,getSubstationManagement } from "@/api/mode";
 import { mapGetters } from 'vuex'
 import qs from 'qs'
 export default {
@@ -93,40 +85,30 @@ export default {
       ifAdd:true,
       formData:{
         id:'',    // 变电站id
-        stationName: "",   //变电站名称
-        stationAddress: "",    //变电站地址
-        stationFzr: "",       //负责人
-        stationFzrdh: "",     //负责人电话
-        level: "",   //所属等级
+        collectorName: "",   //采集器名称
+        seriaNumber:'',  // 序列号
+        stationId:'',   // 隶属变电站
+        status: 1,    //状态：1-正常，0-删除
         opuser: 0,   //操作人id
-        status: 1    //状态：1-正常，0-删除
       },
       rules:{
-        stationName:[
-          {required:true,message:'请输入变电站名称',trigger:'blur'},
+        collectorName:[
+          {required:true,message:'请输入采集器名称',trigger:'blur'},
           {min:2,max:20,message:'长度在2~20个字符',trigger:'blur'}
         ],
-        stationAddress:[
-          {required:true,message:'请输入变电站地址',trigger:'blur'},
-          {min:5,max:100,message:'长度在5~100个字符',trigger:'blur'}
+        seriaNumber:[
+          {required:true,message:'请输入序列号',trigger:'blur'},
+          {min:1,max:10,message:'长度在1~10个字符',trigger:'blur'}
         ],
-        stationFzr:[
-          {required:true,message:'请输入负责人',trigger:'blur'},
-          {min:2,max:10,message:'长度在2~10个字符',trigger:'blur'}
+        stationId:[
+          {required:true,message:'请选择变电站',trigger:'blur'}
         ],
-        stationFzrdh:[
-          {required:true,message:'请输入负责人电话',trigger:'blur'},
-          {min:8,max:15,message:'请输入正确的电话，长度在8~15个字符',trigger:'blur'}
-        ],
-        // level:[
-        //   {required:true,message:'请输入所属等级',trigger:'blur'},
-        //   {min:1,max:5,message:'长度在1~5个字符',trigger:'blur'}
-        // ],
         status:[
           {required:true,message:'请选择状态',trigger:'blur'}
         ]
       },
       dataList: [], //列表数据
+      subList:[],  // 变电站列表
       total:0,   // 信息总条数
       page:1,  // 页数
       rows:10,  // 每页几条
@@ -146,17 +128,30 @@ export default {
         page: this.page, // 页数
         rows: this.rows // 每页几条数据
       };
-      getSubstationManagement(data).then((res) => {
+      getCollectorManagement(data).then((res) => {
         if (res.code == 200) {
-          this.dataList = res.extend.listConvertingStation;
+          this.dataList = res.extend.listStationLine;
           this.total = res.extend.count
         }
       });
     },
+     // 获取变电站列表
+        getSubList(){
+          let data = {
+            page:1,
+            rows:100
+          }
+          getSubstationManagement(data).then(res=>{
+            if(res.code == 200){
+              this.subList = res.extend.listConvertingStation
+            }
+          })
+        },
     // 新增
     add(){
       this.ifAdd = true
       this.dialogVisible = true
+      this.getSubList();
     },
     // 提交（新增）
     submitForm(formName){
@@ -164,7 +159,7 @@ export default {
       $this.$refs[formName].validate((valid)=>{
         if(valid){
           $this.formData.opuser = $this.userId
-          addSubstationManagement($this.formData).then(res=>{
+          addCollectorManagement($this.formData).then(res=>{
             if(res.code === 200){
               $this.$message({
                 type:'success',
@@ -192,7 +187,7 @@ export default {
       let $this = this
       $this.$refs[formName].validate((valid)=>{
         if(valid){
-          updateSubstationManagement($this.formData).then(res=>{
+          updateCollectorManagement($this.formData).then(res=>{
             if(res.code === 200){
                 $this.$message({
                   type:'success',
@@ -218,28 +213,27 @@ export default {
     // 重置
     resetForm(formName){
       this.$refs[formName].resetFields();
-      this.formData.stationName = ''
-      this.formData.stationAddress = ''
-      this.formData.stationFzr = ''
-      this.formData.stationFzrdh = ''
-      this.formData.level = ''
+      this.formData.collectorName = ''
+      this.formData.seriaNumber = ''      
       this.formData.status = 1
     },
     // 关闭弹窗
     handleClosed(){
       this.resetForm('ruleform')
-      this.ifAdd = true
+      this.ifAdd = true      
+      this.formData.stationId = ''
+      this.formData.opuser = ''
+      this.formData.id = ''
     },
     // 编辑
     editClick(e){
       this.ifAdd = false;
       this.dialogVisible = true;
-      console.log(e)
-      this.formData.stationName = e.stationName
-      this.formData.stationAddress = e.stationAddress
-      this.formData.stationFzr = e.stationFzr
-      this.formData.stationFzrdh = e.stationFzrdh
-      this.formData.level = e.level
+      this.getSubList();
+      this.formData.collectorName = e.collectorName
+      this.formData.seriaNumber = e.seriaNumber
+      this.formData.stationId = e.stationId
+      this.formData.opuser = e.opuser
       this.formData.status = e.status
       this.formData.id = e.id
     },
@@ -253,7 +247,7 @@ export default {
         let data = {
           id:e.id
         }
-        deleteSubstationManagement(data).then(res=>{
+        deleteCollectorManagement(data).then(res=>{
           if(res.code === 200){
             this.$message({
               type:'success',

@@ -55,17 +55,17 @@ export const constantRouter = [{
 export const asyncRouterMap = [
     // 账号管理
     {
-        path: '/table',
+        path: '/user',
         component: Layout,
-        redirect: '/table/list',
+        redirect: '/user/index',
         meta: { title: '账号管理', icon: 'icon-table' },
         children: [{
-                path: 'list',
+                path: 'index',
                 name: '账号管理',
                 component: () =>
-                    import ('@/view/table/tableList'),
+                    import ('@/view/user/index'),
                 meta: { title: '账号管理', icon: 'icon-List' },
-                menu: 'upms:tableList:read',
+                menu: 'upms:user:read',
                 hidden: false
             },
         ]
@@ -92,6 +92,15 @@ export const asyncRouterMap = [
                     import ('@/view/substation/lineManagement'),
                 meta: { title: '管理二', icon: 'icon-box' },
                 menu: 'upms:line:read',
+                hidden: false
+            },
+            {
+                path: 'collector',
+                name: '管理三',
+                component: () =>
+                    import ('@/view/substation/collectorManagement'),
+                meta: { title: '管理三', icon: 'icon-box' },
+                menu: 'upms:collector:read',
                 hidden: false
             }
         ]
