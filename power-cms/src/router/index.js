@@ -106,23 +106,23 @@ export const asyncRouterMap = [
         ]
     },
     // 电表管理
-    // {
-    //     path: '/table',
-    //     component: Layout,
-    //     redirect: '/table/list',
-    //     meta: { title: '电表管理', icon: 'icon-table' },
-    //     children: [
-    //         {
-    //             path: 'upload',
-    //             name: '电表管理',
-    //             component: () =>
-    //                 import ('@/view/table/tableUpload'),
-    //             meta: { title: '电表管理', icon: 'icon-shangchuan' },
-    //             menu: 'upms:tableUpload:read',
-    //             hidden: false
-    //         },
-    //     ]
-    // },
+    {
+        path: '/ammeter',
+        component: Layout,
+        redirect: '/ammeter/index',
+        meta: { title: '管理二', icon: 'icon-table' },
+        children: [
+            {
+                path: 'index',
+                name: '管理二',
+                component: () =>
+                    import ('@/view/ammeter/index'),
+                meta: { title: '管理二', icon: 'icon-shangchuan' },
+                menu: 'upms:ammeter:read',
+                hidden: false
+            },
+        ]
+    },
     // // 故障管理
     // {
     //     path: '/table',

@@ -32,10 +32,10 @@ const userMap = {
             'upms:log:create',
             'upms:log:update',
             'upms:log:delete',
-            'upms:tableList:read',
-            'upms:tableList:create',
-            'upms:tableList:update',
-            'upms:tableList:delete',
+            'upms:ammeter:read',
+            'upms:ammeter:create',
+            'upms:ammeter:update',
+            'upms:ammeter:delete',
             'upms:tableUpload:read',
             'upms:map1:read'
         ]

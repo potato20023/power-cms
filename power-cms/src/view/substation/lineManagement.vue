@@ -2,8 +2,18 @@
   <div class="container">
     <h3>管理二</h3>
     <p>线路管理</p>
-    <el-button v-if="csType == 1" type="primary" round @click="add()">新增</el-button>
-
+    <div class="con-head">
+      <el-button v-if="csType == 1" type="primary" round @click="add()">新增</el-button>
+      <div class="search">
+        <el-input v-model="searchData.lineName" placeholder="请输入线路名称" @keyup.enter.native="getList()"></el-input>
+        
+        <el-select v-model="searchData.stationId" style="width:100%" @change="getList()">
+          <el-option v-for="(item,index) in subList" :key="index" :label="item.stationName" :value="item.id"></el-option>
+        </el-select>
+        <el-input v-model="searchData.lineLevel" placeholder="请输入线路等级" @keyup.enter.native="getList()"></el-input>
+        <el-button @click="getList()">搜索</el-button>
+      </div>
+    </div>
     <el-table
       :data="dataList"
       border
@@ -44,20 +54,20 @@
       @closed="handleClosed"
       :title="ifAdd?'新增':'编辑'"
     >
-      <el-form ref="lineRuleform" :model="lineFormData" :rules="rules" label-width="100px">
+      <el-form ref="lineRuleform" :model="formData" :rules="rules" label-width="100px">
         <el-form-item label="线路名称" prop="lineName">
-          <el-input type="text" v-model="lineFormData.lineName" placeholder="请输入线路名称" maxlength="21"></el-input>
+          <el-input type="text" v-model="formData.lineName" placeholder="请输入线路名称" maxlength="21"></el-input>
         </el-form-item>
         <el-form-item label="线路等级" prop="lineLevel">
-          <el-input type="text" v-model="lineFormData.lineLevel" placeholder="请输入线路等级" maxlength="5"></el-input>
+          <el-input type="text" v-model="formData.lineLevel" placeholder="请输入线路等级" maxlength="5"></el-input>
         </el-form-item>
         <el-form-item label="所属变电站" prop="stationId">
-          <el-select v-model="lineFormData.stationId" :disabled="ifAdd?false:true">
+          <el-select v-model="formData.stationId" :disabled="ifAdd?false:true">
             <el-option v-for="(item,index) in subList" :key="index" :label="item.stationName" :value="item.id"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="状态" prop="status">
-          <el-radio-group v-model="lineFormData.status">
+          <el-radio-group v-model="formData.status">
             <el-radio :label=1>正常</el-radio>
             <el-radio :label=0>删除</el-radio>
           </el-radio-group>
@@ -81,7 +91,7 @@ import {mapGetters} from 'vuex'
       return {
           dialogVisible:false,
           ifAdd:true,
-          lineFormData:{
+          formData:{
             lineName:'',
             lineLevel:'',
             stationId:'',
@@ -104,6 +114,11 @@ import {mapGetters} from 'vuex'
               {required:true,message:'请选择状态',trigger:'blur'}
             ]
           },
+          searchData:{
+            lineName:'',
+            lineLevel:'',
+            stationId:''
+          },
           dataList:[],  // 线路列表
           subList:[],  // 变电站列表
           page:1,   // 页数
@@ -117,15 +132,14 @@ import {mapGetters} from 'vuex'
     components: {},
     mounted() {
       this.getList();
+      this.getSubList();
     },
     methods: {
         // 获取线路列表
         getList(){
-            let data = {
-                page:this.page,
-                rows:this.rows
-            }
-            getLineManagement(data).then(res=>{
+            this.searchData.page = this.page
+            this.searchData.rows = this.rows
+            getLineManagement(this.searchData).then(res=>{
                 if(res.code === 200){
                     this.dataList = res.extend.listStationLine
                     this.total = res.extend.count
@@ -148,27 +162,25 @@ import {mapGetters} from 'vuex'
         add(){
           this.dialogVisible = true;
           this.ifAdd = true;
-          this.getSubList();
         },
         // 点击编辑
         editOne(e){
           this.dialogVisible = true;
           this.ifAdd = false;
-          this.getSubList();
-          this.lineFormData.lineName = e.lineName
-          this.lineFormData.lineLevel = e.lineLevel
-          this.lineFormData.stationId = e.stationId
-          this.lineFormData.status = e.status
-          this.lineFormData.opuser = e.opuser
-          this.lineFormData.id = e.id
+          this.formData.lineName = e.lineName
+          this.formData.lineLevel = e.lineLevel
+          this.formData.stationId = e.stationId
+          this.formData.status = e.status
+          this.formData.opuser = e.opuser
+          this.formData.id = e.id
         },
         // 提交（新增）
         submitForm(formName){
           let $this = this;
           $this.$refs[formName].validate((valid)=>{
             if(valid){
-              console.log($this.lineFormData)
-              addLineManagement($this.lineFormData).then(res=>{
+              console.log($this.formData)
+              addLineManagement($this.formData).then(res=>{
                 if(res.code == 200){
                   $this.$message({
                     type:'success',
@@ -191,10 +203,10 @@ import {mapGetters} from 'vuex'
         // 提交（编辑）
         editForm(formName){
           let $this = this;
-          console.log($this.lineFormData)
+          console.log($this.formData)
           $this.$refs[formName].validate((valid)=>{
             if(valid){
-              updateLineManagement($this.lineFormData).then(res=>{
+              updateLineManagement($this.formData).then(res=>{
                 if(res.code == 200){
                   $this.$message({
                     type:'success',
@@ -243,17 +255,17 @@ import {mapGetters} from 'vuex'
         // 重置
         resetForm(formName){
           this.$refs[formName].resetFields();
-          this.lineFormData.lineName = ''
-          this.lineFormData.lineLevel = ''
-          this.lineFormData.status = 1
+          this.formData.lineName = ''
+          this.formData.lineLevel = ''
+          this.formData.status = 1
         },
         // 弹窗关闭
         handleClosed(){
           this.resetForm('lineRuleform');
           this.ifAdd = true;
-          this.lineFormData.stationId = ''
-          this.lineFormData.opuser = ''
-          this.lineFormData.id = ''
+          this.formData.stationId = ''
+          this.formData.opuser = ''
+          this.formData.id = ''
         },
         handleCurrentChange(val){
           this.page = val
@@ -273,6 +285,15 @@ import {mapGetters} from 'vuex'
   }
 
 </script>
-<style lang='' scoped>
-
+<style lang='scss' scoped>
+.container{
+    .con-head{
+        display: flex;
+        justify-content: space-between;
+        .search{
+            display: flex;
+            justify-content: space-between;
+        }
+    }
+}
 </style>

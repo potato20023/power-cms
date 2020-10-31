@@ -2,7 +2,18 @@
   <div class="container">
     <h3>管理一</h3>
     <p>变电站管理</p>
-    <el-button v-if="csType == 1" type="primary" round @click="add()">新增</el-button>
+    <div class="con-head">
+      <el-button v-if="csType == 1" type="primary" round @click="add()">新增</el-button>
+      <div class="search">
+        <el-input v-model="searchData.stationName" placeholder="请输入变电站名称" @keyup.enter.native="getList()"></el-input>
+        <!-- <el-input v-model="searchData.stationAddress" placeholder="请输入变电站地址" @keyup.enter.native="getList()"></el-input> -->
+        <el-input v-model="searchData.stationFzr" placeholder="请输入负责人" @keyup.enter.native="getList()"></el-input>
+        <el-input v-model="searchData.stationFzrdh" placeholder="请输入负责人电话" @keyup.enter.native="getList()"></el-input>
+        <!-- <el-input v-model="searchData.level" placeholder="请输入等级" @keyup.enter.native="getList()"></el-input> -->
+        <el-button @click="getList()">搜索</el-button>
+      </div>
+    </div>
+    
     <el-table :data="dataList" border style="margin:20px auto">
       <el-table-column prop="stationName" label="变电站名称"></el-table-column>
       <el-table-column
@@ -11,6 +22,7 @@
       ></el-table-column>
       <el-table-column prop="stationFzr" label="负责人"></el-table-column>
       <el-table-column prop="stationFzrdh" label="负责人电话"></el-table-column>
+      <el-table-column prop="level" label="等级"></el-table-column>
       <el-table-column prop="status" label="状态">
         <template slot-scope="scope">
           <el-tag v-if="scope.row.status == 1" type="success">正常</el-tag>
@@ -20,9 +32,9 @@
       <el-table-column prop="createTimeStr" label="创建时间"></el-table-column>
       <el-table-column prop="upTimeStr" label="更新时间"></el-table-column>
       <el-table-column fixed="right" label="操作" width="200px">
-        <template slot-scope="scope">
-          <el-button v-if="csType == 1" type="primary" size="small" @click="editClick(scope.row)">编辑</el-button>
-          <el-button type="danger" size="small" @click="deleteClick(scope.row)" v-if="scope.row.status == 1 && csType == 1">删除</el-button>
+        <template slot-scope="scope" v-if="csType == 1" >
+          <el-button type="primary" size="small" @click="editClick(scope.row)">编辑</el-button>
+          <el-button type="danger" size="small" @click="deleteClick(scope.row)" v-if="scope.row.status == 1">删除</el-button>
           <el-button type="danger" size="small" disabled v-else>已删除</el-button>
         </template>
       </el-table-column>
@@ -65,12 +77,12 @@
         <el-form-item label="等级" prop="level">
           <el-input v-model="formData.level" maxlength="6" placeholder="请输入等级"></el-input>
         </el-form-item>
-        <el-form-item label="状态" prop="status">
+        <!-- <el-form-item label="状态" prop="status">
           <el-radio-group v-model="formData.status">
             <el-radio :label=1>正常</el-radio>
             <el-radio :label=0>删除</el-radio>
           </el-radio-group>
-        </el-form-item>
+        </el-form-item> -->
         <el-form-item>
           <el-button v-if="ifAdd" type="primary" @click="submitForm('ruleform')">提交</el-button>
           <el-button v-else type="primary" @click="editForm('ruleform')">提交</el-button>
@@ -99,7 +111,6 @@ export default {
         stationFzrdh: "",     //负责人电话
         level: "",   //所属等级
         opuser: 0,   //操作人id
-        status: 1    //状态：1-正常，0-删除
       },
       rules:{
         stationName:[
@@ -121,10 +132,14 @@ export default {
         // level:[
         //   {required:true,message:'请输入所属等级',trigger:'blur'},
         //   {min:1,max:5,message:'长度在1~5个字符',trigger:'blur'}
-        // ],
-        status:[
-          {required:true,message:'请选择状态',trigger:'blur'}
-        ]
+        // ]
+      },
+      searchData:{
+        stationName: "",   //变电站名称
+        stationAddress: "",    //变电站地址
+        stationFzr: "",       //负责人
+        stationFzrdh: "",     //负责人电话
+        level: ""  //所属等级
       },
       dataList: [], //列表数据
       total:0,   // 信息总条数
@@ -142,11 +157,9 @@ export default {
   methods: {
     // 获取列表数据
     getList() {
-      let data = {
-        page: this.page, // 页数
-        rows: this.rows // 每页几条数据
-      };
-      getSubstationManagement(data).then((res) => {
+      this.searchData.page = this.page
+      this.searchData.rows = this.rows
+      getSubstationManagement(this.searchData).then((res) => {
         if (res.code == 200) {
           this.dataList = res.extend.listConvertingStation;
           this.total = res.extend.count
@@ -223,7 +236,6 @@ export default {
       this.formData.stationFzr = ''
       this.formData.stationFzrdh = ''
       this.formData.level = ''
-      this.formData.status = 1
     },
     // 关闭弹窗
     handleClosed(){
@@ -240,7 +252,6 @@ export default {
       this.formData.stationFzr = e.stationFzr
       this.formData.stationFzrdh = e.stationFzrdh
       this.formData.level = e.level
-      this.formData.status = e.status
       this.formData.id = e.id
     },
     // 删除
@@ -295,5 +306,15 @@ export default {
 <style lang='scss' scoped>
 h3 {
   margin-bottom: 20px;
+}
+.container{
+    .con-head{
+        display: flex;
+        justify-content: space-between;
+        .search{
+            display: flex;
+            justify-content: space-between;
+        }
+    }
 }
 </style>

@@ -99,7 +99,7 @@ export function deleteLineManagement(data){
     })
 }
 
-// 获取线路列表
+// 获取采集器列表
 export function getCollectorManagement(data){
     return requestD({
         url:'/rcpmcs/station/listStationCollector',
@@ -107,7 +107,7 @@ export function getCollectorManagement(data){
         params:data
     })
 }
-// 新增线路
+// 新增采集器
 export function addCollectorManagement(data){
     return requestD({
         url:'/rcpmcs/station/saveStationCollector',
@@ -115,7 +115,7 @@ export function addCollectorManagement(data){
         params:data
     })
 }
-// 编辑线路
+// 编辑采集器
 export function updateCollectorManagement(data){
     return requestD({
         url:'/rcpmcs/station/updateStationCollector',
@@ -123,7 +123,7 @@ export function updateCollectorManagement(data){
         params:data
     })
 }
-// 删除线路
+// 删除采集器
 export function deleteCollectorManagement(data){
     return requestD({
         url:'/rcpmcs/station/deleteStationCollector',
@@ -131,3 +131,36 @@ export function deleteCollectorManagement(data){
         params:data
     })
 }
+
+// 获取电表列表
+export function getAmmeterList(data){
+    return requestD({
+        url:'/rcpmcs/ammeter/listAmmeter',
+        method:'post',
+        params:data
+    })
+}
+// 新增电表
+export function addAmmeter(data){
+    return requestD({
+        url:'/rcpmcs/ammeter/saveAmmeter',
+        method:'post',
+        params:data
+    })
+}
+// 编辑电表
+export function updateAmmeter(data){
+    return requestD({
+        url:'/rcpmcs/ammeter/updateAmmeter',
+        method:'post',
+        params:data
+    })
+}
+// 删除电表
+// export function deleteAmmeter(data){
+//     return requestD({
+//         url:'/rcpmcs/station/deleteStationCollector',
+//         method:'post',
+//         params:data
+//     })
+// }

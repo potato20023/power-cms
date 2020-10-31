@@ -19,5 +19,12 @@ li {
     color: #333;
 }
 .container{
-    
+    .con-head{
+        display: flex;
+        justify-content: space-between;
+        .search{
+            display: flex;
+            justify-content: space-between;
+        }
+    }
 }

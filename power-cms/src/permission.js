@@ -2,7 +2,7 @@
  * @Author: chumengzhen 
  * @Date: 2020-04-22 10:21:13 
  * @Last Modified by: chumengzhen
- * @Last Modified time: 2020-10-19 14:31:52
+ * @Last Modified time: 2020-10-21 09:20:22
  * 全局权限检测，包括（路由的全局守卫）
  */
 
@@ -49,10 +49,10 @@ router.beforeEach((to, from, next) => {
                         'upms:collector:create',
                         'upms:collector:update',
                         'upms:collector:delete',
-                        'upms:tableList:read',
-                        'upms:tableList:create',
-                        'upms:tableList:update',
-                        'upms:tableList:delete',
+                        'upms:ammeter:read',
+                        'upms:ammeter:create',
+                        'upms:ammeter:update',
+                        'upms:ammeter:delete',
                         'upms:tableUpload:read',
                         'upms:map1:read'
                     ]

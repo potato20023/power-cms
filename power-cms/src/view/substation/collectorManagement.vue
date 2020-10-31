@@ -2,11 +2,21 @@
   <div class="container">
     <h3>管理三</h3>
     <p>采集器管理</p>
-    <el-button v-if="csType == 1" type="primary" round @click="add()">新增</el-button>
+    <div class="con-head">
+      <el-button v-if="csType == 1" type="primary" round @click="add()">新增</el-button>
+      <div class="search">
+        <el-input v-model="searchData.seriaNumber" placeholder="请输入序列号" @keyup.enter.native="getList()"></el-input>
+        <el-input v-model="searchData.collectorName" placeholder="请输入采集器名称" @keyup.enter.native="getList()"></el-input>
+        <el-select v-model="searchData.stationId" style="width:100%" @change="getList()">
+          <el-option v-for="(item,index) in subList" :key="index" :label="item.stationName" :value="item.id"></el-option>
+        </el-select>
+        <el-button @click="getList()">搜索</el-button>
+      </div>
+    </div>
     <el-table :data="dataList" border style="margin:20px auto">
       <el-table-column prop="seriaNumber" label="序列号" width="100px"></el-table-column>
       <el-table-column prop="collectorName" label="采集器名称"></el-table-column>
-      <el-table-column prop="collectorName" label="所属变电站"></el-table-column>
+      <el-table-column prop="stationName" label="所属变电站"></el-table-column>
       <el-table-column prop="status" label="状态">
         <template slot-scope="scope">
           <el-tag v-if="scope.row.status == 1" type="success">正常</el-tag>
@@ -57,12 +67,12 @@
             <el-option v-for="(item,index) in subList" :key="index" :label="item.stationName" :value="item.id"></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="状态" prop="status">
+        <!-- <el-form-item label="状态" prop="status">
           <el-radio-group v-model="formData.status">
             <el-radio :label=1>正常</el-radio>
             <el-radio :label=0>删除</el-radio>
           </el-radio-group>
-        </el-form-item>
+        </el-form-item> -->
         <el-form-item>
           <el-button v-if="ifAdd" type="primary" @click="submitForm('ruleform')">提交</el-button>
           <el-button v-else type="primary" @click="editForm('ruleform')">提交</el-button>
@@ -88,7 +98,6 @@ export default {
         collectorName: "",   //采集器名称
         seriaNumber:'',  // 序列号
         stationId:'',   // 隶属变电站
-        status: 1,    //状态：1-正常，0-删除
         opuser: 0,   //操作人id
       },
       rules:{
@@ -103,9 +112,14 @@ export default {
         stationId:[
           {required:true,message:'请选择变电站',trigger:'blur'}
         ],
-        status:[
-          {required:true,message:'请选择状态',trigger:'blur'}
-        ]
+        // status:[
+        //   {required:true,message:'请选择状态',trigger:'blur'}
+        // ]
+      },
+      searchData:{
+        collectorName: "", //采集器名称
+        seriaNumber:'',  // 序列号
+        stationId:''   // 隶属变电站
       },
       dataList: [], //列表数据
       subList:[],  // 变电站列表
@@ -120,15 +134,14 @@ export default {
   components: {},
   mounted() {
     this.getList();
+    this.getSubList();
   },
   methods: {
     // 获取列表数据
     getList() {
-      let data = {
-        page: this.page, // 页数
-        rows: this.rows // 每页几条数据
-      };
-      getCollectorManagement(data).then((res) => {
+      this.searchData.page = this.page
+      this.searchData.rows = this.rows
+      getCollectorManagement(this.searchData).then((res) => {
         if (res.code == 200) {
           this.dataList = res.extend.listStationLine;
           this.total = res.extend.count
@@ -151,7 +164,7 @@ export default {
     add(){
       this.ifAdd = true
       this.dialogVisible = true
-      this.getSubList();
+      
     },
     // 提交（新增）
     submitForm(formName){
@@ -214,8 +227,7 @@ export default {
     resetForm(formName){
       this.$refs[formName].resetFields();
       this.formData.collectorName = ''
-      this.formData.seriaNumber = ''      
-      this.formData.status = 1
+      this.formData.seriaNumber = ''    
     },
     // 关闭弹窗
     handleClosed(){
@@ -229,12 +241,11 @@ export default {
     editClick(e){
       this.ifAdd = false;
       this.dialogVisible = true;
-      this.getSubList();
+      
       this.formData.collectorName = e.collectorName
       this.formData.seriaNumber = e.seriaNumber
       this.formData.stationId = e.stationId
       this.formData.opuser = e.opuser
-      this.formData.status = e.status
       this.formData.id = e.id
     },
     // 删除
@@ -289,5 +300,15 @@ export default {
 <style lang='scss' scoped>
 h3 {
   margin-bottom: 20px;
+}
+.container{
+    .con-head{
+        display: flex;
+        justify-content: space-between;
+        .search{
+            display: flex;
+            justify-content: space-between;
+        }
+    }
 }
 </style>

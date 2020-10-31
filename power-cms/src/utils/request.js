@@ -33,12 +33,10 @@ requestD.interceptors.response.use(res => {
     let $this = this
     if (res.data.code == 203) {
         // 登录超时
-        $this.$message({
-            type:'warning',
-            message:res.message
-        })
-        $this.$router.path('/login')
+        alert('登录超时')
         removeToken()
+        $this.$router.path('/login')
+        
     }
     return res.data;
 }, err => {
