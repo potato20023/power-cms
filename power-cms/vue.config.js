@@ -10,7 +10,7 @@ module.exports={
     },
     chainWebpack: config => {
         config.plugin('html').tap(args=>{
-            args[0].title = 'cmz-cms-demo'
+            args[0].title = '电能集中远程管控平台'
             return args
         })
     },

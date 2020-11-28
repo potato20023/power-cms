@@ -58,7 +58,7 @@ export const asyncRouterMap = [
         path: '/user',
         component: Layout,
         redirect: '/user/index',
-        meta: { title: '账号管理', icon: 'icon-table' },
+        meta: { title: '权限管理', icon: 'icon-table' },
         children: [{
                 path: 'index',
                 name: '账号管理',
@@ -75,31 +75,31 @@ export const asyncRouterMap = [
         path: '/mode',
         component: Layout,
         redirect: '/mode/index',
-        meta: { title: '管理一', icon: 'icon-box' },
+        meta: { title: '变电站管理', icon: 'icon-box' },
         children: [{
                 path: 'index',
-                name: '管理一',
+                name: '变电站管理',
                 component: () =>
                     import ('@/view/substation/substationManagement'),
-                meta: { title: '管理一', icon: 'icon-box' },
+                meta: { title: '变电站管理', icon: 'icon-box' },
                 menu: 'upms:sub:read',
                 hidden: false
             },
             {
                 path: 'line',
-                name: '管理二',
+                name: '线路管理',
                 component: () =>
                     import ('@/view/substation/lineManagement'),
-                meta: { title: '管理二', icon: 'icon-box' },
+                meta: { title: '线路管理', icon: 'icon-box' },
                 menu: 'upms:line:read',
                 hidden: false
             },
             {
                 path: 'collector',
-                name: '管理三',
+                name: '采集器管理',
                 component: () =>
                     import ('@/view/substation/collectorManagement'),
-                meta: { title: '管理三', icon: 'icon-box' },
+                meta: { title: '采集器管理', icon: 'icon-box' },
                 menu: 'upms:collector:read',
                 hidden: false
             }
@@ -110,19 +110,44 @@ export const asyncRouterMap = [
         path: '/ammeter',
         component: Layout,
         redirect: '/ammeter/index',
-        meta: { title: '管理二', icon: 'icon-table' },
+        meta: { title: '电表管理', icon: 'icon-table' },
         children: [
             {
                 path: 'index',
-                name: '管理二',
+                name: '电表管理',
                 component: () =>
                     import ('@/view/ammeter/index'),
-                meta: { title: '管理二', icon: 'icon-shangchuan' },
+                meta: { title: '电表管理', icon: 'icon-shangchuan' },
                 menu: 'upms:ammeter:read',
                 hidden: false
             },
         ]
     },
+    // 操作日志
+    {
+        path:'/journal',
+        component:Layout,
+        redirect:'/journal/signin',
+        meta:{title:'操作日志',icon:'icon-box'},
+        children:[
+            {
+                path:'signin',
+                name:'登录日志',
+                component:()=>import('@/view/journal/journalSignIn'),
+                meta:{title:'登录日志',icon:''},
+                menu:'upms:signin:read',
+                hidden:false
+            },
+            {
+                path:'operation',
+                name:'操作日志',
+                component:()=>import('@/view/journal/journalOperation'),
+                meta:{title:'操作日志',icon:''},
+                menu:'upms:operation:read',
+                hidden:false
+            }
+        ]
+    }
     // // 故障管理
     // {
     //     path: '/table',

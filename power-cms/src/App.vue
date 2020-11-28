@@ -17,6 +17,5 @@ export default {
 </script>
 
 <style>
-  @import './assets/style/index.scss';
   @import './assets/iconfont/iconfont.css';
 </style>

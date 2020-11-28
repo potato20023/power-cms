@@ -164,3 +164,19 @@ export function updateAmmeter(data){
 //         params:data
 //     })
 // }
+
+//登录日志列表
+export function getLogList(data){
+    return requestD({
+        url:'/rcpmcs/log/listLogLogin',
+        method:'post',
+        params:data
+    })
+}
+export function getLogOperationList(data){
+    return requestD({
+        url:'/rcpmcs/log/listLogOperation',
+        method:'post',
+        params:data
+    })
+}

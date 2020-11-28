@@ -30,13 +30,12 @@ requestD.interceptors.request.use(config => {
 // 添加响应拦截器
 requestD.interceptors.response.use(res => {
     // 对响应数据做些什么
-    let $this = this
+    let _this = this
     if (res.data.code == 203) {
         // 登录超时
         alert('登录超时')
         removeToken()
-        $this.$router.path('/login')
-        
+        _this.$router.path('/login')
     }
     return res.data;
 }, err => {

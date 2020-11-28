@@ -23,10 +23,11 @@ export function LoginOut(token) {
         method: 'get',
     })
 }
-// 获取系统列表
-// export function getSystem() {
-//     return requestD({
-//         url: '',
-//         method: 'post'
-//     })
-// }
+// 修改密码
+export function changePasword() {
+    return requestD({
+        url: '/rcpmcs/user/updateSystemUser',
+        method: 'post',
+        params:data
+    })
+}

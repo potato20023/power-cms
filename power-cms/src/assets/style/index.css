@@ -20,21 +20,33 @@ li {
   color: #333;
 }
 
-.container .con-head {
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
-  -webkit-box-pack: justify;
-      -ms-flex-pack: justify;
-          justify-content: space-between;
+#app .container {
+  width: 100%;
 }
 
-.container .con-head .search {
+#app .container .con-head {
+  width: 100%;
+}
+
+#app .container .con-head .search {
+  width: 100%;
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
-  -webkit-box-pack: justify;
-      -ms-flex-pack: justify;
-          justify-content: space-between;
+  -webkit-box-pack: left;
+      -ms-flex-pack: left;
+          justify-content: left;
+  padding-bottom: 20px;
+  -ms-flex-wrap: wrap;
+      flex-wrap: wrap;
+  overflow: hidden;
+}
+
+#app .container .con-head .search .w250 {
+  width: 250px;
+}
+
+#app .container .con-head .search .search-btn {
+  margin-left: 30px;
 }
 /*# sourceMappingURL=index.css.map */

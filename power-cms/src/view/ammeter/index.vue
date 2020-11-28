@@ -1,54 +1,54 @@
 <template>
   <div class="container">
-    <h3>管理一</h3>
-    <p>电表管理</p>
+    <!-- <p>电表管理</p> -->
     <div class="con-head">
-      <el-button v-if="csType == 1" type="primary" round @click="add()"
-        >新增</el-button
-      >
-      <div class="search">
-        <el-input placeholder="请输入编号" v-model="searchData.serialNumber" @keyup.enter.native="getList"></el-input>
-        <el-input placeholder="请输入厂家" v-model="searchData.factory" @keyup.enter.native="getList"></el-input>
-        <el-select
-          v-model="searchData.stationId"
-          @change="subChangeSearch(searchData.stationId)"
-          placeholder="请选择变电站"
-          style="width:100%"
+      <ul class="search">
+        <li class="w250">
+          <el-input
+            placeholder="请输入编号"
+            v-model="searchData.serialNumber"
+            @keyup.enter.native="getList"
+          ></el-input>
+        </li>
+        <li class="w250">
+          <el-input
+            placeholder="请输入厂家"
+            v-model="searchData.factory"
+            @keyup.enter.native="getList"
+          ></el-input>
+        </li>
+        <li class="w250">
+          <el-select
+            v-model="searchData.stationId"
+            @change="subChangeSearch(searchData.stationId)"
+            placeholder="请选择变电站"
+            class="w250"
+          >
+            <el-option
+              v-for="(item, index) in subList"
+              :key="index"
+              :label="item.stationName"
+              :value="item.id"
+            ></el-option>
+          </el-select>
+        </li>
+        <li class="w250">
+          <el-button
+            @click="getList()"
+            class="search-btn"
+            type="success"
+            icon="el-icon-search"
+            >搜索</el-button
+          >
+        </li>
+      </ul>
+      <div>
+        <el-button v-if="csType == 1" type="primary" round @click="add()"
+          >新增</el-button
         >
-          <el-option
-            v-for="(item, index) in subList"
-            :key="index"
-            :label="item.stationName"
-            :value="item.id"
-          ></el-option>
-        </el-select>
-        <!-- <el-select
-         v-model="searchData.lineId" 
-         @change="lineChangeSearch(searchData.lineId)"
-         placeholder="请选择线路"
-         style="width:100%"
+        <el-button @click="getExcel()" round icon="el-icon-download"
+          >导出表格</el-button
         >
-          <el-option
-            v-for="(item, index) in lineList"
-            :key="index"
-            :label="item.lineName"
-            :value="item.id"
-          ></el-option>
-        </el-select> -->
-        <!-- <el-select
-         v-model="searchData.collectorId" 
-         @change="collectorChangeSearch(searchData.collectorId)"
-         placeholder="请选择采集器"
-         style="width:100%"
-        >
-          <el-option
-            v-for="(item, index) in collectorList"
-            :key="index"
-            :label="item.collectorName"
-            :value="item.id"
-          ></el-option>
-        </el-select> -->
-        <el-button @click="getList()">搜索</el-button>
       </div>
     </div>
 
@@ -65,14 +65,14 @@
         prop="collectorName"
       ></el-table-column>
       <el-table-column label="所属线路" prop="lineName"></el-table-column>
-      <el-table-column label="创建时间" prop="createTimeStr"></el-table-column>
-      <el-table-column label="更新时间" prop="upTimeStr"></el-table-column>
       <el-table-column label="状态" prop="status">
         <template slot-scope="scope">
           <el-tag type="success" v-if="scope.row.status == 1">正常</el-tag>
           <el-tag type="danger" v-else>已删除</el-tag>
         </template>
       </el-table-column>
+      <el-table-column label="创建时间" prop="createTimeStr"></el-table-column>
+      <el-table-column label="更新时间" prop="upTimeStr"></el-table-column>
       <el-table-column
         label="操作"
         fixed="right"
@@ -247,8 +247,8 @@ export default {
   methods: {
     // 获取电表列表
     getList() {
-      this.searchData.page = this.page
-      this.searchData.rows = this.rows
+      this.searchData.page = this.page;
+      this.searchData.rows = this.rows;
       getAmmeterList(this.searchData).then((res) => {
         if (res.code === 200) {
           this.dataList = res.extend.listAmmeter;
@@ -303,15 +303,15 @@ export default {
     subChangeSearch(e) {
       this.getLineList(e);
       this.getCollectorList(e);
-      this.getList()
+      this.getList();
     },
     // 线路改变时,获取电表列表(查询)
     lineChangeSearch(e) {
-      this.getList()
+      this.getList();
     },
     // 采集器改变时,获取电表列表(查询)
     collectorChangeSearch(e) {
-      this.getList()
+      this.getList();
     },
     // 新增
     add() {
@@ -433,6 +433,45 @@ export default {
     handleSizeChange(val) {
       this.rows = val;
     },
+    // 导出表格
+    getExcel() {
+      import("@/vendor/Export2Excel").then((excel) => {
+        const header = [
+          "编号",
+          "厂家",
+          "通信地址",
+          "所属变电站",
+          "所属采集器",
+          "所属线路",
+          "状态",
+          "创建时间",
+          "更新时间",
+        ];
+        const filterVal = [
+          "serialNumber",
+          "factory",
+          "communicationAddress",
+          "stationName",
+          "collectorName",
+          "lineName",
+          "status",
+          "createTimeStr",
+          "upTimeStr",
+        ];
+        const list = this.dataList;
+        const data = this.formatJson(filterVal, list);
+        const filename = "电表管理表格";
+
+        excel.export_json_to_excel({
+          header,
+          data,
+          filename,
+        });
+      });
+    },
+    formatJson(filterVal, jsonData) {
+      return jsonData.map((v) => filterVal.map((j) => v[j]));
+    },
   },
   watch: {
     page(res) {
@@ -445,12 +484,4 @@ export default {
 };
 </script>
 <style lang='scss' scoped>
-.con-head{
-    display: flex;
-    justify-content: space-between;
-    .search{
-        display: flex;
-        justify-content: space-between;
-    }
-}
 </style>

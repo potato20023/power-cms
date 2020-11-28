@@ -15,6 +15,8 @@ Vue.use(elementUI)
 
 // 引入animated css
 import '@/assets/style/animate.min.css'
+
+import '@/assets/style/index.scss'
 // 全局mock接口
 // import './mock'
 // 全局权限检查

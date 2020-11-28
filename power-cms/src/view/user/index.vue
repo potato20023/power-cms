@@ -1,27 +1,49 @@
 <template>
   <div class="container">
-    <h3>用户管理</h3>
-    <el-button v-if="csType == 1" type="primary" round @click="add()">新增</el-button>
+    <!-- <h3>用户管理</h3> -->
+    <div class="con-head">
+      <ul class="search">
+        <li class="w250">
+          <el-input v-model="searchData.csName" placeholder="请输入用户名" @keyup.enter.native="getList()"></el-input>
+        </li>
+        <li class="w250">
+          <el-input v-model="searchData.csPhone" placeholder="请输入电话" @keyup.enter.native="getList()"></el-input>
+        </li>
+        <li class="w250">
+          <el-button @click="getList()" class="search-btn" type="success"  icon="el-icon-search">搜索</el-button>
+        </li>
+        
+        
+        
+      </ul>
+      <div>
+        <el-button v-if="csType == 1" type="primary" round @click="add()" icon='el-icon-plus'>新增</el-button>
+        <el-button round @click="getExcel()" icon='el-icon-download'>导出表格</el-button>
+      </div>
+      
+      
+    </div>
+    
     <el-table :data="dataList" border style="margin:20px auto">
-      <el-table-column prop="csLoginName" label="账号"></el-table-column>
-      <el-table-column prop="csName" label="姓名"></el-table-column>
-      <el-table-column prop="csPhone" label="电话"></el-table-column>
-      <el-table-column prop="csType" label="用户身份">
+      <el-table-column prop="csLoginName" label="登录账号" align="center"></el-table-column>
+      <el-table-column prop="csName" label="姓名" width="90px" align="center"></el-table-column>
+      <el-table-column prop="csPhone" label="电话" width="130px" align="center"></el-table-column>
+      <el-table-column prop="csType" label="用户身份" align="center">
         <template slot-scope="scope">
           <el-tag v-if="scope.row.csType == 1" type="success">超级管理员</el-tag>
           <el-tag v-else type="primary">普通用户</el-tag>
         </template>
       </el-table-column>
-      <el-table-column prop="status" label="状态">
+      <el-table-column prop="status" label="状态" align="center">
         <template slot-scope="scope">
           <el-tag v-if="scope.row.status == 1" type="success">正常</el-tag>
           <el-tag v-if="scope.row.status == 2" type="permary">已冻结</el-tag>
           <el-tag v-if="scope.row.status == 3" type="danger">已删除</el-tag>
         </template>
       </el-table-column>
-      <el-table-column prop="createTimeStr" label="创建时间"></el-table-column>
-      <el-table-column prop="upTimeStr" label="更新时间"></el-table-column>
-      <el-table-column fixed="right" label="操作" width="250px"  v-if="csType == 1">
+      <el-table-column prop="createTimeStr" label="创建时间" width="200px" align="center"></el-table-column>
+      <el-table-column prop="upTimeStr" label="更新时间" width="200px" align="center"></el-table-column>
+      <el-table-column fixed="right" label="操作" width="250px"  v-if="csType == 1" align="center">
         <template slot-scope="scope">
           <el-button type="primary" size="small" @click="editClick(scope.row)">编辑</el-button>
           <el-button type="info" size="small" @click="deleteClick(scope.row,2)" v-if="scope.row.status == 1">冻结</el-button>
@@ -57,11 +79,11 @@
       <el-form-item label="姓名" prop="csName">
           <el-input type="text" v-model="formData.csName" maxlength="11" placeholder="请输入姓名"></el-input>
           </el-form-item>
-        <el-form-item label="账号" prop="csLoginName">
+        <el-form-item label="登录账号" prop="csLoginName">
           <el-input type="text" v-model="formData.csLoginName" maxlength="11" placeholder="请输入账号" :disabled="ifAdd?false:true"></el-input>
         </el-form-item>
         <el-form-item label="密码" prop="csLoginPwd">
-          <el-input type="text" v-model="formData.csLoginPwd" maxlength="11" placeholder="请输入账号"></el-input>
+          <el-input show-password v-model="formData.csLoginPwd" maxlength="21" placeholder="请输入密码"></el-input>
         </el-form-item>
         
         <el-form-item label="电话" prop="csPhone">
@@ -120,6 +142,10 @@ export default {
           {required:true,message:'请选择状态',trigger:'blur'}
         ]
       },
+      searchData:{
+        csName:'',
+        csPhone:''
+      },
       dataList: [], //列表数据
       total:0,   // 信息总条数
       page:1,  // 页数
@@ -136,16 +162,13 @@ export default {
   methods: {
     // 获取列表数据
     getList() {
-        // console.log(md5('admin'))
-        // console.log(md5('21232f297a57a5a743894a0e4a801fc3'))
-      let data = {
-        page: this.page, // 页数
-        rows: this.rows // 每页几条数据
-      };
-      getUserList(data).then((res) => {
+      let $this = this
+      $this.searchData.page = $this.page
+      $this.searchData.rows = $this.rows
+      getUserList($this.searchData).then((res) => {
         if (res.code == 200) {
-          this.dataList = res.extend.listSystemUser;
-          this.total = res.extend.count
+          $this.dataList = res.extend.listSystemUser;
+          $this.total = res.extend.count
         }
       });
     },
@@ -234,7 +257,7 @@ export default {
       this.dialogVisible = true;
       this.formData.csLoginName = e.csLoginName
       this.formData.csName = e.csName
-      this.formData.csLoginPwd = e.csLoginPwd
+      // this.formData.csLoginPwd = e.csLoginPwd
       this.formData.csPhone = e.csPhone
       this.formData.csType = e.csType
       this.formData.csId = e.csId
@@ -279,7 +302,27 @@ export default {
     },
     handleSizeChange(val){
       this.rows = val
-    }
+    },
+    // 导出表格
+    getExcel() {
+      import("@/vendor/Export2Excel").then((excel) => {
+        const header = ["登录账号", "姓名", "电话", "用户身份", "状态", "创建时间","更新时间"];
+        const filterVal = ["csLoginName","csName","csPhone","csType","status","createTimeStr","upTimeStr"];
+        const list = this.dataList;
+        const data = this.formatJson(filterVal, list);
+        const filename = '账号管理表格'
+
+        excel.export_json_to_excel({
+          header,
+          data,
+          filename
+        })
+      });
+      
+    },
+    formatJson(filterVal, jsonData) {
+      return jsonData.map((v) => filterVal.map((j) => v[j]));
+    },
   },
   watch: {
     page(res){
@@ -292,7 +335,4 @@ export default {
 };
 </script>
 <style lang='scss' scoped>
-h3 {
-  margin-bottom: 20px;
-}
 </style>
