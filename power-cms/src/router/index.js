@@ -128,7 +128,7 @@ export const asyncRouterMap = [
         path:'/journal',
         component:Layout,
         redirect:'/journal/signin',
-        meta:{title:'操作日志',icon:'icon-box'},
+        meta:{title:'日志管理',icon:'icon-box'},
         children:[
             {
                 path:'signin',
@@ -147,159 +147,43 @@ export const asyncRouterMap = [
                 hidden:false
             }
         ]
-    }
-    // // 故障管理
-    // {
-    //     path: '/table',
-    //     component: Layout,
-    //     redirect: '/table/list',
-    //     meta: { title: '故障管理', icon: 'icon-table' },
-    //     children: [
-    //         {
-    //             path: 'upload',
-    //             name: '故障管理',
-    //             component: () =>
-    //                 import ('@/view/table/tableUpload'),
-    //             meta: { title: '故障管理', icon: 'icon-shangchuan' },
-    //             menu: 'upms:tableUpload:read',
-    //             hidden: false
-    //         },
-    //     ]
-    // },
-    // // 抄表管理
-    // {
-    //     path: '/table',
-    //     component: Layout,
-    //     redirect: '/table/upload',
-    //     meta: { title: '抄表管理', icon: 'icon-table' },
-    //     children: [ {
-    //             path: 'upload',
-    //             name: '参数设置',
-    //             component: () =>
-    //                 import ('@/view/table/tableUpload'),
-    //             meta: { title: '参数设置', icon: 'icon-shangchuan' },
-    //             menu: 'upms:tableUpload:read',
-    //             hidden: false
-    //         },
-    //         {
-    //             path: 'upload',
-    //             name: '自动抄表',
-    //             component: () =>
-    //                 import ('@/view/table/tableUpload'),
-    //             meta: { title: '自动抄表', icon: 'icon-shangchuan' },
-    //             menu: 'upms:tableUpload:read',
-    //             hidden: false
-    //         },
-    //         {
-    //             path: 'upload',
-    //             name: '手动抄表',
-    //             component: () =>
-    //                 import ('@/view/table/tableUpload'),
-    //             meta: { title: '手动抄表', icon: 'icon-List' },
-    //             menu: 'upms:tableUpload:read',
-    //             hidden: false
-    //         },
-    //     ]
-    // },
-    // // 操作日志
-    // {
-    //     path: '/table',
-    //     component: Layout,
-    //     redirect: '/table/upload',
-    //     meta: { title: '操作日志', icon: 'icon-table' },
-    //     children: [
-    //         {
-    //             path: 'upload',
-    //             name: '登录日志',
-    //             component: () =>
-    //                 import ('@/view/table/tableUpload'),
-    //             meta: { title: '登录日志', icon: 'icon-shangchuan' },
-    //             menu: 'upms:tableUpload:read',
-    //             hidden: false
-    //         },
-    //         {
-    //             path: 'upload',
-    //             name: '参数修改日志',
-    //             component: () =>
-    //                 import ('@/view/table/tableUpload'),
-    //             meta: { title: '参数修改日志', icon: 'icon-shangchuan' },
-    //             menu: 'upms:tableUpload:read',
-    //             hidden: false
-    //         },
-    //         {
-    //             path: 'upload',
-    //             name: '手动抄表日志',
-    //             component: () =>
-    //                 import ('@/view/table/tableUpload'),
-    //             meta: { title: '手动抄表日志', icon: 'icon-shangchuan' },
-    //             menu: 'upms:tableUpload:read',
-    //             hidden: false
-    //         },
-    //         {
-    //             path: 'upload',
-    //             name: '自动抄表日志',
-    //             component: () =>
-    //                 import ('@/view/table/tableUpload'),
-    //             meta: { title: '自动抄表日志', icon: 'icon-List' },
-    //             menu: 'upms:tableUpload:read',
-    //             hidden: false
-    //         },
-    //         {
-    //             path: 'upload',
-    //             name: '电站操作日志',
-    //             component: () =>
-    //                 import ('@/view/table/tableUpload'),
-    //             meta: { title: '电站操作日志', icon: 'icon-List' },
-    //             menu: 'upms:tableUpload:read',
-    //             hidden: false
-    //         },
-    //         {
-    //             path: 'upload',
-    //             name: '电表操作日志',
-    //             component: () =>
-    //                 import ('@/view/table/tableUpload'),
-    //             meta: { title: '电表操作日志', icon: 'icon-List' },
-    //             menu: 'upms:tableUpload:read',
-    //             hidden: false
-    //         },
-    //         {
-    //             path: 'upload',
-    //             name: '时间同步日志',
-    //             component: () =>
-    //                 import ('@/view/table/tableUpload'),
-    //             meta: { title: '时间同步日志', icon: 'icon-List' },
-    //             menu: 'upms:tableUpload:read',
-    //             hidden: false
-    //         },
-    //         {
-    //             path: 'upload',
-    //             name: '采集器操作日志',
-    //             component: () =>
-    //                 import ('@/view/table/tableUpload'),
-    //             meta: { title: '采集器操作日志', icon: 'icon-List' },
-    //             menu: 'upms:tableUpload:read',
-    //             hidden: false
-    //         },
-    //     ]
-    // },
-    // // 采集器管理
-    // {
-    //     path: '/table',
-    //     component: Layout,
-    //     redirect: '/table/list',
-    //     meta: { title: '采集器管理', icon: 'icon-table' },
-    //     children: [
-    //         {
-    //             path: 'upload',
-    //             name: '采集器管理',
-    //             component: () =>
-    //                 import ('@/view/table/tableUpload'),
-    //             meta: { title: '采集器管理', icon: 'icon-shangchuan' },
-    //             menu: 'upms:tableUpload:read',
-    //             hidden: false
-    //         },
-    //     ]
-    // },
+    },
+    // 故障管理
+    {
+        path: '/fault',
+        component: Layout,
+        redirect: '/fault/index',
+        meta: { title: '故障列表', icon: 'icon-table' },
+        children: [
+            {
+                path: 'index',
+                name: '故障列表',
+                component: () =>
+                    import ('@/view/fault/realTimeFault'),
+                meta: { title: '故障列表', icon: 'icon-shangchuan' },
+                menu: 'upms:fault:read',
+                hidden: false
+            },
+        ]
+    },
+    // 抄表管理
+    {
+        path: '/param',
+        component: Layout,
+        redirect: '/param/index',
+        meta: { title: '抄表管理', icon: 'icon-table' },
+        children: [ {
+                path: 'upload',
+                name: '抄表日期设置',
+                component: () =>
+                    import ('@/view/param/param'),
+                meta: { title: '抄表日期设置', icon: 'icon-shangchuan' },
+                menu: 'upms:param:read',
+                hidden: false
+            }
+        ]
+    },
+    
 ]
 
 export default new Router({

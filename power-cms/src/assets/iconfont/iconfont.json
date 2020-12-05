@@ -1,149 +1,65 @@
 {
-  "id": "1779200",
-  "name": "cms-demo-vue",
+  "id": "2061873",
+  "name": "cmz-cms-demo",
   "font_family": "iconfont",
   "css_prefix_text": "icon-",
   "description": "",
   "glyphs": [
     {
-      "icon_id": "68323",
-      "name": "table",
-      "font_class": "table",
-      "unicode": "e66d",
-      "unicode_decimal": 58989
-    },
-    {
-      "icon_id": "843907",
-      "name": "wan_map",
-      "font_class": "map",
-      "unicode": "e607",
-      "unicode_decimal": 58887
-    },
-    {
-      "icon_id": "1703540",
-      "name": "上传",
-      "font_class": "shangchuan",
-      "unicode": "e64a",
-      "unicode_decimal": 58954
-    },
-    {
-      "icon_id": "8327014",
-      "name": "List",
-      "font_class": "List",
-      "unicode": "e655",
-      "unicode_decimal": 58965
-    },
-    {
-      "icon_id": "10882661",
-      "name": "折线图",
-      "font_class": "zhexiantu",
-      "unicode": "e8b3",
-      "unicode_decimal": 59571
-    },
-    {
-      "icon_id": "11982657",
-      "name": "Home, homepage, menu",
-      "font_class": "Homehomepagemenu",
-      "unicode": "e9ce",
-      "unicode_decimal": 59854
-    },
-    {
-      "icon_id": "845783",
-      "name": "钱",
-      "font_class": "qian",
-      "unicode": "e645",
-      "unicode_decimal": 58949
-    },
-    {
-      "icon_id": "1272654",
-      "name": "盒子",
-      "font_class": "box",
-      "unicode": "e63a",
-      "unicode_decimal": 58938
-    },
-    {
-      "icon_id": "1799687",
+      "icon_id": "1287715",
       "name": "用户",
       "font_class": "yonghu",
-      "unicode": "e663",
-      "unicode_decimal": 58979
-    },
-    {
-      "icon_id": "2512917",
-      "name": "BAI-钱",
-      "font_class": "BAI-qian",
-      "unicode": "e6b7",
-      "unicode_decimal": 59063
-    },
-    {
-      "icon_id": "3791134",
-      "name": "钱钱-01",
-      "font_class": "qianqian-",
-      "unicode": "e606",
-      "unicode_decimal": 58886
-    },
-    {
-      "icon_id": "4298040",
-      "name": "维修off",
-      "font_class": "weixiuoff",
-      "unicode": "e609",
-      "unicode_decimal": 58889
-    },
-    {
-      "icon_id": "5329911",
-      "name": "链接-断开",
-      "font_class": "lianjie-duankai",
-      "unicode": "e747",
-      "unicode_decimal": 59207
-    },
-    {
-      "icon_id": "5330665",
-      "name": "眼睛",
-      "font_class": "yanjing",
-      "unicode": "e7b4",
-      "unicode_decimal": 59316
-    },
-    {
-      "icon_id": "5411939",
-      "name": "电表工单安装",
-      "font_class": "dianbiaogongdananzhuang-",
-      "unicode": "e651",
-      "unicode_decimal": 58961
-    },
-    {
-      "icon_id": "6965070",
-      "name": "安全警报",
-      "font_class": "anquanjingbao",
       "unicode": "e60a",
       "unicode_decimal": 58890
     },
     {
-      "icon_id": "7055644",
-      "name": "设置",
-      "font_class": "shezhi",
-      "unicode": "e72a",
-      "unicode_decimal": 59178
+      "icon_id": "16271679",
+      "name": "锁",
+      "font_class": "suo",
+      "unicode": "e606",
+      "unicode_decimal": 58886
     },
     {
-      "icon_id": "7339840",
-      "name": "用户管理",
-      "font_class": "yonghuguanli",
-      "unicode": "e6aa",
-      "unicode_decimal": 59050
-    },
-    {
-      "icon_id": "11019861",
-      "name": "维修",
-      "font_class": "weixiu",
+      "icon_id": "356539",
+      "name": "home address",
+      "font_class": "yidiandiantubiao22",
       "unicode": "e60e",
       "unicode_decimal": 58894
     },
     {
-      "icon_id": "11757074",
-      "name": "文件",
-      "font_class": "wenjian",
-      "unicode": "e739",
-      "unicode_decimal": 59193
+      "icon_id": "7193681",
+      "name": "组件",
+      "font_class": "zujian",
+      "unicode": "e730",
+      "unicode_decimal": 59184
+    },
+    {
+      "icon_id": "8198527",
+      "name": "角色管理",
+      "font_class": "jiaoseguanli",
+      "unicode": "e665",
+      "unicode_decimal": 58981
+    },
+    {
+      "icon_id": "11521313",
+      "name": "地图",
+      "font_class": "ditu",
+      "unicode": "e778",
+      "unicode_decimal": 59256
+    },
+    {
+      "icon_id": "16067500",
+      "name": "表格",
+      "font_class": "biaoge",
+      "unicode": "e675",
+      "unicode_decimal": 58997
+    },
+    {
+      "icon_id": "16542941",
+      "name": "富文本编辑器_选项结构",
+      "font_class": "fuwenbenbianjiqi_xuanxiangjiegou",
+      "unicode": "e655",
+      "unicode_decimal": 58965
     }
   ]
 }

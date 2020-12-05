@@ -49,4 +49,83 @@ li {
 #app .container .con-head .search .search-btn {
   margin-left: 30px;
 }
+
+.login {
+  width: 100vw;
+  height: 100vh;
+  background-image: url("~@/assets/image/login-bg.png");
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  padding-top: 18.24074vh;
+}
+
+.login .login-main {
+  width: 62.5vw;
+  height: 63.51852vh;
+  margin: 0 auto;
+  background-color: #ffffff;
+  border-radius: 5px;
+  padding: 12.5vh 0 13.51852vh 2.23958vw;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: justify;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
+}
+
+.login .login-main .login-img {
+  width: 35vw;
+  height: 37.5vh;
+}
+
+.login .login-main .login-img img {
+  width: 35vw;
+  height: 37.5vh;
+}
+
+.login .login-main .login-form {
+  width: 25.26042vw;
+  height: 63.51852vh;
+}
+
+.login .login-main .login-form .title {
+  font-size: 3.33333vh;
+  line-height: 4.62963vh;
+  text-align: center;
+  color: #333;
+  margin-bottom: 3.7037vh;
+}
+
+.login .login-main .login-form .login-elform {
+  width: 15.10417vw;
+  margin: 0 auto;
+  padding-top: 2.77778vh;
+}
+
+.login .login-main .login-form .login-elform .el-input__inner {
+  width: 15.10417vw;
+  height: 3.7037vh;
+  border: 0;
+  border-bottom: 0.09259vh solid #e6ebf1;
+  background-size: 1.04167vw 2.22222vh;
+  background-repeat: no-repeat;
+  background-position: 0.74074vh;
+  padding-left: 2.08333vw;
+}
+
+.login .login-main .login-form .login-elform .yonghu .el-input__inner {
+  background-image: url("~@/assets/image/yonghu.png") !important;
+}
+
+.login .login-main .login-form .login-elform .pwd .el-input__inner {
+  background-image: url("~@/assets/image/pwd.png") !important;
+}
+
+.login .login-main .login-form .login-elform .login-btn {
+  width: 14.84375vw;
+  height: 4.62963vh;
+  border-radius: 2.31481vh;
+  margin: 6.48148vh auto 0;
+}
 /*# sourceMappingURL=index.css.map */

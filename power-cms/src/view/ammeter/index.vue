@@ -43,8 +43,16 @@
         </li>
       </ul>
       <div>
-        <el-button v-if="csType == 1" type="primary" round @click="add()"
+        <el-button
+          v-if="csType == 1"
+          type="primary"
+          round
+          @click="add()"
+          icon="el-icon-plus"
           >新增</el-button
+        >
+        <el-button round @click="getAmmeterDataReport" icon="el-icon-download"
+          >抄表</el-button
         >
         <el-button @click="getExcel()" round icon="el-icon-download"
           >导出表格</el-button
@@ -53,38 +61,85 @@
     </div>
 
     <el-table :data="dataList" border style="margin: 20px auto">
-      <el-table-column label="编号" prop="serialNumber"></el-table-column>
-      <el-table-column label="厂家" prop="factory"></el-table-column>
+      <el-table-column
+        label="编号"
+        prop="serialNumber"
+        align="center"
+        min-width="100px"
+      ></el-table-column>
+      <el-table-column
+        label="厂家"
+        prop="factory"
+        align="center"
+        min-width="150px"
+      ></el-table-column>
       <el-table-column
         label="通信地址"
         prop="communicationAddress"
+        align="center"
+        min-width="200px"
       ></el-table-column>
-      <el-table-column label="所属变电站" prop="stationName"></el-table-column>
+      <el-table-column
+        label="所属变电站"
+        prop="stationName"
+        align="center"
+        min-width="150px"
+      ></el-table-column>
       <el-table-column
         label="所属采集器"
         prop="collectorName"
+        align="center"
+        min-width="150px"
       ></el-table-column>
-      <el-table-column label="所属线路" prop="lineName"></el-table-column>
-      <el-table-column label="状态" prop="status">
+      <el-table-column
+        label="所属线路"
+        prop="lineName"
+        align="center"
+        min-width="150px"
+      ></el-table-column>
+      <el-table-column
+        label="状态"
+        prop="status"
+        align="center"
+        min-width="150px"
+      >
         <template slot-scope="scope">
           <el-tag type="success" v-if="scope.row.status == 1">正常</el-tag>
           <el-tag type="danger" v-else>已删除</el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="创建时间" prop="createTimeStr"></el-table-column>
-      <el-table-column label="更新时间" prop="upTimeStr"></el-table-column>
+      <el-table-column
+        label="创建时间"
+        prop="createTimeStr"
+        align="center"
+        min-width="200px"
+      ></el-table-column>
+      <el-table-column
+        label="更新时间"
+        prop="upTimeStr"
+        align="center"
+        min-width="200px"
+      ></el-table-column>
       <el-table-column
         label="操作"
         fixed="right"
-        width="200px"
+        min-width="300px"
+        align="center"
         v-if="csType == 1"
       >
         <template slot-scope="scope">
           <el-button type="primary" size="small" @click="editOne(scope.row)"
             >编辑</el-button
           >
-          <!-- <el-button type="danger" size="small" @click="deleteOne(scope.row)" v-if="scope.row.status == 1">删除</el-button>
-          <el-button type="danger" size="small" disabled v-else>已删除</el-button> -->
+          <el-button
+            type="warning"
+            size="small"
+            @click="statusAmmeter(scope.row)"
+            >实时状况</el-button
+          >
+          <el-button type="danger" size="small" @click="deleteClick(scope.row)"
+            >删除</el-button
+          >
         </template>
       </el-table-column>
     </el-table>
@@ -179,6 +234,89 @@
         </el-form-item>
       </el-form>
     </el-dialog>
+
+    <el-dialog :visible.sync="dialogVisibleReal" title="实时状况" width="80%">
+      <div class="ammeterReal">
+        <ul class="ammeterLeft">
+          <li>
+            <span>正向有功总电量</span>
+            <span>{{ statusAmmeterList.ammeterDataDay.zxygzdl }}</span>
+          </li>
+          <li>
+            <span>反向有功总电量</span>
+            <span>{{ statusAmmeterList.ammeterDataDay.fxygzdl }}</span>
+          </li>
+          <li>
+            <span>正向无功总电量</span>
+            <span>{{ statusAmmeterList.ammeterDataDay.zxwgzdl }}</span>
+          </li>
+          <li>
+            <span>反向无功总电量</span>
+            <span>{{ statusAmmeterList.ammeterDataDay.fxwgzdl }}</span>
+          </li>
+          <li>
+            <span>正向有功峰总电量</span>
+            <span>{{ statusAmmeterList.ammeterDataDay.zxygfzdl }}</span>
+          </li>
+          <li>
+            <span>正向有功平总电量</span>
+            <span>{{ statusAmmeterList.ammeterDataDay.zxygpzdl }}</span>
+          </li>
+          <li>
+            <span>正向有功谷总电量</span>
+            <span>{{ statusAmmeterList.ammeterDataDay.zxyggzdl }}</span>
+          </li>
+          <li>
+            <span>反向有功峰总电量</span>
+            <span>{{ statusAmmeterList.ammeterDataDay.fxygfzdl }}</span>
+          </li>
+          <li>
+            <span>反向有功平总电量</span>
+            <span>{{ statusAmmeterList.ammeterDataDay.fxygpzdl }}</span>
+          </li>
+          <li>
+            <span>反向有功谷总电量</span>
+            <span>{{ statusAmmeterList.ammeterDataDay.fxyggzdl }}</span>
+          </li>
+          <!-- <li>
+            电表id-----
+            {{statusAmmeterList.ammeterDataDay.ammeterId}}
+          </li> -->
+          <li>
+            <span>序列号</span>
+            <span>{{ statusAmmeterList.ammeterDataDay.seriaNumber }}</span>
+          </li>
+          <li>
+            <span>正向有功尖峰总电度</span>
+            <span>{{ statusAmmeterList.ammeterDataDay.zxygjfdl }}</span>
+          </li>
+          <li>
+            <span>反向有功尖峰总电度</span>
+            <span>{{ statusAmmeterList.ammeterDataDay.fxygjfdl }}</span>
+          </li>
+          <li>
+            <span>变电站名称</span>
+            <span>{{ statusAmmeterList.ammeterDataDay.stationName }}</span>
+          </li>
+          <li>
+            <span>线路名称</span>
+            <span>{{ statusAmmeterList.ammeterDataDay.lineName }}</span>
+          </li>
+          <li>
+            <span>采集时间</span>
+            <span>{{
+              statusAmmeterList.ammeterDataDay.collectionTimeStr
+            }}</span>
+          </li>
+        </ul>
+        <ul class="ammeterRight">
+          <li id="ammeterE1"></li>
+          <li id="ammeterE2"></li>
+          <li id="ammeterE3"></li>
+          <li id="ammeterE4"></li>
+        </ul>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -187,10 +325,12 @@ import {
   getAmmeterList,
   addAmmeter,
   updateAmmeter,
-  deleteLineManagement,
+  deleteAmmeter,
+  statusAmmeter,
   getSubstationManagement,
   getLineManagement,
   getCollectorManagement,
+  getAmmeterDataReport,
 } from "@/api/mode";
 import { mapGetters } from "vuex";
 export default {
@@ -198,6 +338,7 @@ export default {
   data() {
     return {
       dialogVisible: false,
+      dialogVisibleReal: false,
       ifAdd: true,
       searchData: {
         serialNumber: "",
@@ -231,6 +372,9 @@ export default {
       subList: [], // 变电站列表
       lineList: [], // 线路列表
       collectorList: [], // 采集器列表
+      statusAmmeterList: {
+        ammeterDataDay: {},
+      }, // 电表实时列表
       page: 1, // 页数
       rows: 10, // 条数
       total: 0, // 总条数
@@ -247,6 +391,7 @@ export default {
   methods: {
     // 获取电表列表
     getList() {
+      this.searchData.isExport = 0;
       this.searchData.page = this.page;
       this.searchData.rows = this.rows;
       getAmmeterList(this.searchData).then((res) => {
@@ -312,6 +457,252 @@ export default {
     // 采集器改变时,获取电表列表(查询)
     collectorChangeSearch(e) {
       this.getList();
+    },
+    // 获取点表实时状态
+    statusAmmeter(e) {
+      this.dialogVisibleReal = true;
+      let data = {
+        id: e.id,
+      };
+      statusAmmeter(data).then((res) => {
+        if (res.code == 200) {
+          this.statusAmmeterList.ammeterDataDay = res.extend.ammeterDataDay;
+          let datax = res.extend.echartData.datax;
+          let dataYfxygssz = res.extend.echartData.dataYfxygssz;
+          let dataYfxygxl = res.extend.echartData.dataYfxygxl;
+          let dataYla = res.extend.echartData.dataYla;
+          let dataYlb = res.extend.echartData.dataYlb;
+          let dataYlc = res.extend.echartData.dataYlc;
+          let dataYua = res.extend.echartData.dataYua;
+          let dataYub = res.extend.echartData.dataYub;
+          let dataYuc = res.extend.echartData.dataYuc;
+          let dataYzxygssz = res.extend.echartData.dataYzxygssz;
+          let dataYzxygxl = res.extend.echartData.dataYzxygxl;
+          this.ammeterE1(datax, dataYfxygssz, dataYfxygxl);
+          this.ammeterE2(datax, dataYla, dataYlb, dataYlc);
+          this.ammeterE3(datax, dataYua, dataYub, dataYuc);
+          this.ammeterE4(datax, dataYzxygssz, dataYzxygxl);
+        }
+      });
+    },
+    // 实时状态图表1
+    ammeterE1(datax, dataYfxygssz, dataYfxygxl) {
+      let $this = this;
+      let option = {
+        title: {
+          text: "XXXXXXX",
+          left: "0",
+          top: "2%",
+          textStyle: {
+            fontSize: (16 * $this.screenHeight) / 1080,
+            color: "#999999",
+          },
+        },
+        // 提示框组件
+        tooltip: {
+          trigger: "axis",
+          backgroundColor: "rgba(64,64,64,.9)",
+        },
+        grid: {
+          top: "12%",
+          left: "15%",
+          width: "80%",
+          height: "75%",
+        },
+        color: ["#3379F8", "#33DDF8", "#FF6765"],
+        xAxis: [{
+          type: "category",
+          boundaryGap: false,
+          data: datax,
+          // 坐标轴刻度标签的相关设置
+            axisLabel: {
+              color: "#555555",
+              fontSize: (12 * $this.screenHeight) / 1080
+            },
+            // 坐标轴轴线的相关设置
+            axisLine: {
+              lineStyle: {
+                color: "#999999",
+                width: (1 * $this.screenHeight) / 1080
+              }
+            },
+            // 坐标轴刻度相关设置
+            axisTick: {
+              show: false
+            }
+        }],
+        yAxis: [
+          {
+            type: "value",
+            // 坐标轴刻度标签的相关设置
+            axisLabel: {
+              color: "#555555",
+              fontSize: (12 * $this.screenHeight) / 1080,
+              formatter: function(value, index) {
+                if (value >= 10000 || value <= -10000) {
+                  return value / 10000 + "万";
+                }
+                return value;
+              },
+              // margin: 20,
+            },
+            // 坐标轴轴线的相关设置
+            axisLine: {
+              show: false,
+            },
+            // 坐标轴在grid区域中的分隔线
+            splitLine: {
+              lineStyle: {
+                color: "#999999",
+              },
+            },
+          },
+        ],
+        series: [
+          {
+            name: "dataYfxygssz",
+            data: dataYfxygssz,
+            type: "line",
+            symbol: "none",
+            smooth: true,
+            areaStyle: {
+              color: {
+                x: 0,
+                y: 0,
+                x2: 0,
+                y2: 1,
+                colorStops: [
+                  { offset: 0, color: "#08233f" },
+                  { offset: 1, color: "#002031" },
+                ],
+              },
+            },
+          },
+          {
+            name: "dataYfxygxl",
+            data: dataYfxygxl,
+            type: "line",
+            symbol: "none",
+            smooth: true,
+            areaStyle: {
+              color: {
+                x: 0,
+                y: 0,
+                x2: 0,
+                y2: 1,
+                colorStops: [
+                  { offset: 0, color: "#08233f" },
+                  { offset: 1, color: "#002031" },
+                ],
+              },
+            },
+          },
+        ],
+      };
+      let chart = $this.$echarts.init(document.getElementById("ammeterE1"));
+      chart.clear();
+      chart.resize();
+      chart.setOption(option);
+    },
+    // 实时状态图表2
+    ammeterE2(datax, dataYla, dataYlb, dataYlc) {
+      let $this = this;
+      let option = {
+        xAxis: {
+          type: "category",
+          boundaryGap: false,
+          data: datax,
+        },
+        yAxis: {
+          type: "value",
+        },
+        series: [
+          {
+            data: dataYla,
+            type: "line",
+            areaStyle: {},
+          },
+          {
+            data: dataYlb,
+            type: "line",
+            areaStyle: {},
+          },
+          {
+            data: dataYlc,
+            type: "line",
+            areaStyle: {},
+          },
+        ],
+      };
+      let chart = $this.$echarts.init(document.getElementById("ammeterE2"));
+      chart.clear();
+      chart.resize();
+      chart.setOption(option);
+    },
+    // 实时状态图表3
+    ammeterE3(datax, dataYua, dataYub, dataYuc) {
+      let $this = this;
+      let option = {
+        xAxis: {
+          type: "category",
+          boundaryGap: false,
+          data: datax,
+        },
+        yAxis: {
+          type: "value",
+        },
+        series: [
+          {
+            data: dataYua,
+            type: "line",
+            areaStyle: {},
+          },
+          {
+            data: dataYub,
+            type: "line",
+            areaStyle: {},
+          },
+          {
+            data: dataYuc,
+            type: "line",
+            areaStyle: {},
+          },
+        ],
+      };
+      let chart = $this.$echarts.init(document.getElementById("ammeterE3"));
+      chart.clear();
+      chart.resize();
+      chart.setOption(option);
+    },
+    // 实时状态图表4
+    ammeterE4(datax, dataYzxygssz, dataYzxygxl) {
+      let $this = this;
+      let option = {
+        xAxis: {
+          type: "category",
+          boundaryGap: false,
+          data: datax,
+        },
+        yAxis: {
+          type: "value",
+        },
+        series: [
+          {
+            data: dataYzxygssz,
+            type: "line",
+            areaStyle: {},
+          },
+          {
+            data: dataYzxygxl,
+            type: "line",
+            areaStyle: {},
+          },
+        ],
+      };
+      let chart = $this.$echarts.init(document.getElementById("ammeterE4"));
+      chart.clear();
+      chart.resize();
+      chart.setOption(option);
     },
     // 新增
     add() {
@@ -384,32 +775,6 @@ export default {
         }
       });
     },
-    // 删除
-    // deleteOne(e){
-    //   this.$confirm('是否删除此线路','提示',{
-    //     confirmButtonText:'确定',
-    //     cancelButtonText:'取消',
-    //     type:'warning'
-    //   }).then(()=>{
-    //     let data = {
-    //       id:e.id
-    //     }
-    //     deleteLineManagement(data).then(res=>{
-    //       if(res.code == 200){
-    //         this.$message({
-    //           type:'success',
-    //           message:'删除成功'
-    //         })
-    //       }
-    //     })
-    //     this.getList();
-    //   }).catch(()=>{
-    //     this.$message({
-    //       type:'info',
-    //       message:res.message
-    //     })
-    //   })
-    // },
     // 重置
     resetForm(formName) {
       this.$refs[formName].resetFields();
@@ -427,46 +792,204 @@ export default {
       this.formData.opuser = "";
       this.formData.id = "";
     },
+    // 删除
+    deleteClick(e) {
+      this.$confirm("确定删除此变电站信息吗？", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      })
+        .then(() => {
+          let data = {
+            id: e.id,
+          };
+          deleteAmmeter(data).then((res) => {
+            if (res.code === 200) {
+              this.$message({
+                type: "success",
+                message: "删除成功",
+              });
+            } else {
+              this.$message({
+                type: "wraning",
+                message: "删除失败",
+              });
+            }
+            this.getList();
+          });
+        })
+        .catch(() => {
+          this.$message({
+            type: "info",
+            message: "已取消删除",
+          });
+        });
+    },
     handleCurrentChange(val) {
       this.page = val;
     },
     handleSizeChange(val) {
       this.rows = val;
     },
-    // 导出表格
-    getExcel() {
+    // 抄表
+    getAmmeterDataReport() {
+      getAmmeterDataReport().then((res) => {
+        if (res.code == 200 && res.extend.adr.length > 0) {
+          this.getReportExcel(res.extend.adr);
+        } else {
+          this.$message({
+            type: "danger",
+            message: "抄表失败",
+          });
+        }
+      });
+    },
+    getReportExcel(adr) {
       import("@/vendor/Export2Excel").then((excel) => {
         const header = [
-          "编号",
-          "厂家",
-          "通信地址",
-          "所属变电站",
-          "所属采集器",
-          "所属线路",
-          "状态",
-          "创建时间",
-          "更新时间",
+          "变电站名称",
+          "线路名称",
+          "正向有功总电量上月",
+          "正向有功总电量本月",
+          "正向有功总电量抄表电量",
+          "反向有功总电量上月",
+          "反向有功总电量本月",
+          "反向有功总电量抄表电量",
+          "正向无功总电量上月",
+          "正向无功总电量本月",
+          "正向无功总电量抄表电量",
+          "反向无功总电量上月",
+          "反向无功总电量本月",
+          "反向无功总电量抄表电量",
+          "正向有功峰总电量上月",
+          "正向有功峰总电量本月",
+          "正向有功峰总电量抄表电量",
+          "正向有功平总电量上月",
+          "正向有功平总电量本月",
+          "正向有功平总电量抄表电量",
+          "正向有功谷总电量上月",
+          "正向有功谷总电量本月",
+          "正向有功谷总电量抄表电量",
+          "反向有功峰总电量上月",
+          "反向有功峰总电量本月",
+          "反向有功峰总电量抄表电量",
+          "反向有功平总电量上月",
+          "反向有功平总电量本月",
+          "反向有功平总电量抄表电量",
+          "反向有功谷总电量上月",
+          "反向有功谷总电量本月",
+          "反向有功谷总电量抄表电量",
+          "正向有功尖峰总电度上月",
+          "正向有功尖峰总电度本月",
+          "正向有功尖峰总电度抄表电量",
+          "反向有功尖峰总电度上月",
+          "反向有功尖峰总电度本月",
+          "反向有功尖峰总电度抄表电量",
+          "统计类型",
+          "统计时间",
+          "电表id",
+          "变电站id",
+          "线路id",
         ];
         const filterVal = [
-          "serialNumber",
-          "factory",
-          "communicationAddress",
           "stationName",
-          "collectorName",
           "lineName",
-          "status",
-          "createTimeStr",
-          "upTimeStr",
+          "zxygzdlLast",
+          "zxygzdlCurrent",
+          "zxygzdlCbdl",
+          "fxygzdlLast",
+          "fxygzdlCurrent",
+          "fxygzdlCbdl",
+          "zxwgzdlLast",
+          "zxwgzdlCurrent",
+          "zxwgzdlCbdl",
+          "fxwgzdlLast",
+          "fxwgzdlCurrent",
+          "fxwgzdlCbdl",
+          "zxygfzdlLast",
+          "zxygfzdlCurrent",
+          "zxygfzdlCbdl",
+          "zxygpzdlLast",
+          "zxygpzdlCurrent",
+          "zxygpzdlCbdl",
+          "zxyggzdlLast",
+          "zxyggzdlCurrent",
+          "zxyggzdlCbdl",
+          "fxygfzdlLast",
+          "fxygfzdlCurrent",
+          "fxygfzdlCbdl",
+          "fxygpzdlLast",
+          "fxygpzdlCurrent",
+          "fxygpzdlCbdl",
+          "fxyggzdlLast",
+          "fxyggzdlCurrent",
+          "fxyggzdlCbdl",
+          "zxygjfdlLast",
+          "zxygjfdlCurrent",
+          "zxygjfdlCbdl",
+          "fxygjfdlLast",
+          "fxygjfdlCurrent",
+          "fxygjfdlCbdl",
+          "statisticalType",
+          "statisticalTime",
+          "ammeterId",
+          "stationId",
+          "lineId",
         ];
-        const list = this.dataList;
+        const list = adr;
         const data = this.formatJson(filterVal, list);
-        const filename = "电表管理表格";
+        const filename = "抄表表格";
 
         excel.export_json_to_excel({
           header,
           data,
           filename,
         });
+      });
+    },
+    // 导出表格
+    getExcel() {
+      let excelList = [];
+      this.searchData.isExport = 1;
+      this.searchData.page = 1;
+      this.searchData.rows = "";
+      getAmmeterList(this.searchData).then((res) => {
+        if (res.code === 200) {
+          excelList = res.extend.listAmmeter;
+          import("@/vendor/Export2Excel").then((excel) => {
+            const header = [
+              "编号",
+              "厂家",
+              "通信地址",
+              "所属变电站",
+              "所属采集器",
+              "所属线路",
+              "状态",
+              "创建时间",
+              "更新时间",
+            ];
+            const filterVal = [
+              "serialNumber",
+              "factory",
+              "communicationAddress",
+              "stationName",
+              "collectorName",
+              "lineName",
+              "status",
+              "createTimeStr",
+              "upTimeStr",
+            ];
+            const list = excelList;
+            const data = this.formatJson(filterVal, list);
+            const filename = "电表管理表格";
+
+            excel.export_json_to_excel({
+              header,
+              data,
+              filename,
+            });
+          });
+        }
       });
     },
     formatJson(filterVal, jsonData) {
@@ -484,4 +1007,9 @@ export default {
 };
 </script>
 <style lang='scss' scoped>
+.el-dialog {
+  .el-dialog__body {
+    height: 70vh !important;
+  }
+}
 </style>

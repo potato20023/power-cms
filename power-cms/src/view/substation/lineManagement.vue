@@ -11,7 +11,11 @@
           ></el-input>
         </li>
         <li class="w250">
-          <el-select v-model="searchData.stationId" @change="getList()" class="w250">
+          <el-select
+            v-model="searchData.stationId"
+            @change="getList()"
+            class="w250"
+          >
             <el-option
               v-for="(item, index) in subList"
               :key="index"
@@ -53,18 +57,53 @@
       </div>
     </div>
     <el-table :data="dataList" border style="margin: 20px auto">
-      <el-table-column label="线路名称" prop="lineName"></el-table-column>
-      <el-table-column label="线路等级" prop="lineLevel"></el-table-column>
-      <el-table-column label="隶属变电站" prop="stationName"></el-table-column>
-      <el-table-column label="状态" prop="status">
+      <el-table-column
+        label="线路名称"
+        prop="lineName"
+        align="center"
+        min-width="150px"
+      ></el-table-column>
+      <el-table-column
+        label="线路等级"
+        prop="lineLevel"
+        align="center"
+        min-width="100px"
+      ></el-table-column>
+      <el-table-column
+        label="隶属变电站"
+        prop="stationName"
+        align="center"
+        min-width="150px"
+      ></el-table-column>
+      <el-table-column
+        label="状态"
+        prop="status"
+        align="center"
+        min-width="100px"
+      >
         <template slot-scope="scope">
           <el-tag type="success" v-if="scope.row.status == 1">正常</el-tag>
           <el-tag type="danger" v-else>已删除</el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="创建时间" prop="createTimeStr"></el-table-column>
-      <el-table-column label="更新时间" prop="upTimeStr"></el-table-column>
-      <el-table-column label="操作" fixed="right" width="200px">
+      <el-table-column
+        label="创建时间"
+        prop="createTimeStr"
+        align="center"
+        min-width="200px"
+      ></el-table-column>
+      <el-table-column
+        label="更新时间"
+        prop="upTimeStr"
+        align="center"
+        min-width="200px"
+      ></el-table-column>
+      <el-table-column
+        label="操作"
+        fixed="right"
+        align="center"
+        min-width="150px"
+      >
         <template slot-scope="scope">
           <el-button
             v-if="csType == 1"
@@ -219,6 +258,7 @@ export default {
   methods: {
     // 获取线路列表
     getList() {
+      this.searchData.isExport = 0;
       this.searchData.page = this.page;
       this.searchData.rows = this.rows;
       getLineManagement(this.searchData).then((res) => {
@@ -359,34 +399,43 @@ export default {
     },
     // 导出表格
     getExcel() {
-      import("@/vendor/Export2Excel").then((excel) => {
-        const header = [
-          "线路名称",
-          "线路等级",
-          "隶属变电站",
-          "负责人电话",
-          "状态",
-          "创建时间",
-          "更新时间",
-        ];
-        const filterVal = [
-          "lineName",
-          "lineLevel",
-          "stationName",
-          "stationFzrdh",
-          "status",
-          "createTimeStr",
-          "upTimeStr",
-        ];
-        const list = this.dataList;
-        const data = this.formatJson(filterVal, list);
-        const filename = "线路管理表格";
+      let excelList = [];
+      this.searchData.isExport = 1;
+      this.searchData.page = 1;
+      this.searchData.rows = "";
+      getLineManagement(this.searchData).then((res) => {
+        if (res.code === 200) {
+          excelList = res.extend.listStationLine;
+          import("@/vendor/Export2Excel").then((excel) => {
+            const header = [
+              "线路名称",
+              "线路等级",
+              "隶属变电站",
+              "负责人电话",
+              "状态",
+              "创建时间",
+              "更新时间",
+            ];
+            const filterVal = [
+              "lineName",
+              "lineLevel",
+              "stationName",
+              "stationFzrdh",
+              "status",
+              "createTimeStr",
+              "upTimeStr",
+            ];
+            const list = excelList;
+            const data = this.formatJson(filterVal, list);
+            const filename = "线路管理表格";
 
-        excel.export_json_to_excel({
-          header,
-          data,
-          filename,
-        });
+            excel.export_json_to_excel({
+              header,
+              data,
+              filename,
+            });
+          });
+        }
       });
     },
     formatJson(filterVal, jsonData) {

@@ -13,10 +13,14 @@ li {
     list-style: none;
 }
 
+$vw:19.2;
+$vh:10.8;
+
 #app {
     width: 100%;
     height: 100%;
     color: #333;
+    
     .container {
         width: 100%;
         .con-head {
@@ -39,5 +43,122 @@ li {
         }
     }
     
+}
+
+.login{
+    width: 100vw;
+    height: 100vh;
+    background-image: url("~@/assets/image/login-bg.png");
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+    padding-top:197/$vh + vh;
+    .login-main{
+        width:1200/$vw + vw;
+        height:686/$vh + vh;
+        margin:  0 auto;
+        background-color:#ffffff;
+        border-radius: 5px;
+        padding: 135/$vh + vh 0 146/$vh + vh 43/$vw + vw;
+        display: flex;
+        justify-content: space-between;
+        .login-img{
+            width:672/$vw + vw;
+            height:405/$vh + vh;
+            // border:1px solid red;
+            img{
+                width:672/$vw + vw;
+                height:405/$vh + vh;
+            }
+        }
+        .login-form{
+            width:485/$vw + vw;
+            height:686/$vh + vh;
+            .title{
+                font-size: 36/$vh + vh;
+                line-height: 50/$vh + vh;
+                text-align: center;
+                color:#333;
+                margin-bottom: 40/$vh + vh;
+            }
+            .login-elform{
+                width: 290/$vw + vw;
+                margin: 0 auto;
+                padding-top:30/$vh + vh;
+                
+                .el-input__inner{
+                    width:290/$vw + vw;
+                    height:40/$vh + vh;
+                    border:0;
+                    border-bottom:1/$vh + vh solid #e6ebf1;
+                    background-size: 20/$vw + vw 24/$vh + vh;
+                    background-repeat: no-repeat;
+                    background-position: 8/$vh + vh ;
+                    padding-left:40/$vw + vw;
+                }
+                .yonghu{
+                    .el-input__inner{
+                        background-image: url("~@/assets/image/yonghu.png") !important;
+                    }
+                }
+                .pwd{
+                    .el-input__inner{
+                        background-image: url("~@/assets/image/pwd.png") !important;
+                    }
+                }
+                .login-btn{
+                    width:285/$vw + vw;
+                    height:50/$vh + vh;
+                    border-radius:25/$vh + vh;
+                    margin: 70/$vh + vh auto 0;
+                }
+            }
+            
+        }
+    }
+    
+}
+
+// 电表实时状况图
+.ammeterReal{
+    width:1500/$vw + vw;
+    height:600/$vw + vw;
+    display: flex;
+    justify-content: space-between;
+    .ammeterLeft{
+        width:400/$vw + vw;
+        height:600/$vh + vh;
+        li{
+            display: flex;
+            justify-content: space-between;
+            background-color: #f3f3f3;
+            border-radius: 8/$vh + vh;
+            margin-bottom: 10/$vh + vh;
+            padding: 0 20/$vw + vw;
+            span{
+                display: inline-block;
+                height:30/$vh + vh;
+                font-size: 16/$vh + vh;
+                line-height: 30/$vh + vh;
+                color:#333333;
+                width:200/$vw + vw;
+            }
+            span:nth-child(2){
+                width:160/$vw + vw;
+            }
+        }
+    }
+    .ammeterRight{
+        width:1100/$vw + vw;
+        height:660/$vh + vh;
+        display: flex;
+        justify-content: left;
+        flex-wrap: wrap;
+        li{
+            width:500/$vw + vw;
+            height:300/$vh + vh;
+            background-color: #f4f4f4;
+            margin: 0 25/$vw + vw 15/$vh + vh;
+        }
+    }
 }
 

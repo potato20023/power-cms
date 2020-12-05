@@ -81,7 +81,8 @@ import {mapGetters} from 'vuex'
         LoginOut(getToken()).then(res=>{
           if(res.code == 200){
             removeToken();
-            this.$router.push('/')
+            this.$router.push('/login')
+            // window.location.href =='http://59.110.215.45'
             location.reload();  // 刷新页面，避免出现bug
           }
         })

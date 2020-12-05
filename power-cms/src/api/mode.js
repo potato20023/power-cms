@@ -157,13 +157,30 @@ export function updateAmmeter(data){
     })
 }
 // 删除电表
-// export function deleteAmmeter(data){
-//     return requestD({
-//         url:'/rcpmcs/station/deleteStationCollector',
-//         method:'post',
-//         params:data
-//     })
-// }
+export function deleteAmmeter(data){
+    return requestD({
+        url:'/rcpmcs/ammeter/removeAmmeter',
+        method:'post',
+        params:data
+    })
+}
+// 获取点表实时状态 
+export function statusAmmeter(data){
+    return requestD({
+        url:'/rcpmcs/ammeter/ammeterCurrentStatus',
+        method:'post',
+        params:data
+    })
+}
+
+// 抄表
+export function getAmmeterDataReport(data){
+    return requestD({
+        url:'/rcpmcs/ammeter/listAmmeterDataReport',
+        method:'post',
+        params:data
+    })
+}
 
 //登录日志列表
 export function getLogList(data){
@@ -180,3 +197,22 @@ export function getLogOperationList(data){
         params:data
     })
 }
+
+// 故障列表  
+export function getFaultList(data){
+    return requestD({
+        url:'/rcpmcs/fault/listFault',
+        method:'post',
+        params:data
+    })
+}
+
+// 抄表日期设置
+export function updateSystemParam(data){
+    return requestD({
+        url:'/rcpmcs/system/updateSystemParam',
+        method:'post',
+        params:data
+    })
+}
+

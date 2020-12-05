@@ -18,7 +18,11 @@
           ></el-input>
         </li>
         <li class="w250">
-          <el-select v-model="searchData.stationId" @change="getList()" class="w250">
+          <el-select
+            v-model="searchData.stationId"
+            @change="getList()"
+            class="w250"
+          >
             <el-option
               v-for="(item, index) in subList"
               :key="index"
@@ -55,21 +59,44 @@
       <el-table-column
         prop="seriaNumber"
         label="序列号"
-        width="100px"
+        align="center"
+        min-width="100px"
       ></el-table-column>
       <el-table-column
         prop="collectorName"
         label="采集器名称"
+        align="center"
+        min-width="150px"
       ></el-table-column>
-      <el-table-column prop="stationName" label="所属变电站"></el-table-column>
-      <el-table-column prop="status" label="状态">
+      <el-table-column
+        prop="stationName"
+        label="所属变电站"
+        align="center"
+        min-width="150px"
+      ></el-table-column>
+      <el-table-column
+        prop="status"
+        label="状态"
+        align="center"
+        min-width="100px"
+      >
         <template slot-scope="scope">
           <el-tag v-if="scope.row.status == 1" type="success">正常</el-tag>
           <el-tag v-else type="danger">已删除</el-tag>
         </template>
       </el-table-column>
-      <el-table-column prop="createTimeStr" label="创建时间"></el-table-column>
-      <el-table-column prop="upTimeStr" label="更新时间"></el-table-column>
+      <el-table-column
+        prop="createTimeStr"
+        label="创建时间"
+        align="center"
+        min-width="200px"
+      ></el-table-column>
+      <el-table-column
+        prop="upTimeStr"
+        label="更新时间"
+        align="center"
+        min-width="200px"
+      ></el-table-column>
       <el-table-column fixed="right" label="操作" width="200px">
         <template slot-scope="scope">
           <el-button
@@ -225,6 +252,7 @@ export default {
   methods: {
     // 获取列表数据
     getList() {
+      this.searchData.isExport = 0;
       this.searchData.page = this.page;
       this.searchData.rows = this.rows;
       getCollectorManagement(this.searchData).then((res) => {
@@ -375,32 +403,41 @@ export default {
     },
     // 导出表格
     getExcel() {
-      import("@/vendor/Export2Excel").then((excel) => {
-        const header = [
-          "序列号",
-          "采集器名称",
-          "所属变电站",
-          "状态",
-          "创建时间",
-          "更新时间",
-        ];
-        const filterVal = [
-          "seriaNumber",
-          "collectorName",
-          "stationName",
-          "status",
-          "createTimeStr",
-          "upTimeStr",
-        ];
-        const list = this.dataList;
-        const data = this.formatJson(filterVal, list);
-        const filename = "采集器管理表格";
+      let excelList = [];
+      this.searchData.isExport = 1;
+      this.searchData.page = 1;
+      this.searchData.rows = "";
+      getCollectorManagement(this.searchData).then((res) => {
+        if (res.code == 200) {
+          excelList = res.extend.listStationLine;
+          import("@/vendor/Export2Excel").then((excel) => {
+            const header = [
+              "序列号",
+              "采集器名称",
+              "所属变电站",
+              "状态",
+              "创建时间",
+              "更新时间",
+            ];
+            const filterVal = [
+              "seriaNumber",
+              "collectorName",
+              "stationName",
+              "status",
+              "createTimeStr",
+              "upTimeStr",
+            ];
+            const list = excelList;
+            const data = this.formatJson(filterVal, list);
+            const filename = "采集器管理表格";
 
-        excel.export_json_to_excel({
-          header,
-          data,
-          filename,
-        });
+            excel.export_json_to_excel({
+              header,
+              data,
+              filename,
+            });
+          });
+        }
       });
     },
     formatJson(filterVal, jsonData) {

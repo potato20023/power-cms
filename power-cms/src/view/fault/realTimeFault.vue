@@ -1,15 +1,41 @@
 <template>
   <div class="container">
-    <!-- <p>登录日志</p> -->
+    <!-- <p>故障列表</p> -->
     <div class="con-head">
       <ul class="search">
         <li class="w250">
-          <el-input
-            v-model="searchData.csName"
-            placeholder="请输入操作人姓名"
-            @keyup.enter.native="getList()"
-          ></el-input>
+          <el-select
+            v-model="searchData.stationId"
+            @change="getList()"
+            placeholder="请选择变电站"
+            clearable
+            class="w250"
+          >
+            <el-option
+              v-for="item in listConvertingStation"
+              :key="item.id"
+              :label="item.stationName"
+              :value="item.id"
+            ></el-option>
+          </el-select>
         </li>
+        <li class="w250">
+          <el-select
+            v-model="searchData.faultTypeId"
+            @change="getList()"
+            placeholder="请选择故障类型"
+            clearable
+            class="w250"
+          >
+            <el-option
+              v-for="item in listFaultType"
+              :key="item.id"
+              :label="item.faultType"
+              :value="item.id"
+            ></el-option>
+          </el-select>
+        </li>
+
         <li>
           <el-button
             @click="getList()"
@@ -30,28 +56,50 @@
 
     <el-table :data="dataList" border style="margin: 20px auto">
       <el-table-column
-        prop="content"
-        label="操作内容"
+        prop="serialNumber"
+        label="电表编号"
+        align="center"
+        min-width="100px"
+      ></el-table-column>
+      <el-table-column
+        prop="stationName"
+        label="变电站名称"
         align="center"
         min-width="150px"
       ></el-table-column>
       <el-table-column
-        prop="csName"
-        label="操作人姓名"
+        prop="lineName"
+        label="线路名称"
         align="center"
         min-width="150px"
       ></el-table-column>
       <el-table-column
-        prop="loginIp"
-        label="登录ip"
-        min-width="150px"
+        prop="collectorName"
+        label="采集器名称"
         align="center"
+        min-width="150px"
+      ></el-table-column>
+      <el-table-column
+        prop="faultType"
+        label="故障类型"
+        align="center"
+        min-width="100px"
+      >
+        <template slot-scope="scope">
+          <el-tag type="danger">{{ scope.row.faultType }}</el-tag>
+        </template>
+      </el-table-column>
+      <el-table-column
+        prop="createTimeStr"
+        label="创建时间"
+        align="center"
+        min-width="200px"
       ></el-table-column>
       <el-table-column
         prop="upTimeStr"
         label="更新时间"
-        min-width="200px"
         align="center"
+        min-width="200px"
       ></el-table-column>
     </el-table>
 
@@ -68,16 +116,18 @@
 </template>
 
 <script>
-import { getLogList } from "@/api/mode";
+import { getFaultList } from "@/api/mode";
 import { mapGetters } from "vuex";
+import qs from "qs";
 export default {
   name: "",
   data() {
     return {
+      listConvertingStation: [], //变电站选择
+      listFaultType: [], // 故障类型选择
       searchData: {
-        content: "",
-        csName: "",
-        loginIp: "",
+        stationId: "",
+        faultTypeId: "",
       },
       dataList: [], //列表数据
       total: 0, // 信息总条数
@@ -98,10 +148,12 @@ export default {
       this.searchData.isExport = 0;
       this.searchData.page = this.page;
       this.searchData.rows = this.rows;
-      getLogList(this.searchData).then((res) => {
+      getFaultList(this.searchData).then((res) => {
         if (res.code == 200) {
-          this.dataList = res.extend.listLogLogin;
+          this.dataList = res.extend.listFault;
           this.total = res.extend.count;
+          this.listConvertingStation = res.extend.listConvertingStation;
+          this.listFaultType = res.extend.listFaultType;
         }
       });
     },
@@ -119,15 +171,31 @@ export default {
       this.searchData.isExport = 1;
       this.searchData.page = 1;
       this.searchData.rows = '';
-      getLogList(this.searchData).then((res) => {
+      getFaultList(this.searchData).then((res) => {
         if (res.code == 200) {
-          excelList = res.extend.listLogLogin;
+          excelList = res.extend.listFault;
           import("@/vendor/Export2Excel").then((excel) => {
-            const header = ["操作内容", "操作人姓名", "登录ip", "更新时间"];
-            const filterVal = ["content", "csName", "loginIp", "upTimeStr"];
+            const header = [
+              "电表编号",
+              "变电站名称",
+              "线路名称",
+              "采集器名称",
+              "故障类型",
+              "创建时间",
+              "更新时间",
+            ];
+            const filterVal = [
+              "serialNumber",
+              "stationName",
+              "lineName",
+              "collectorName",
+              "faultType",
+              "createTimeStr",
+              "upTimeStr",
+            ];
             const list = excelList;
             const data = this.formatJson(filterVal, list);
-            const filename = "登录日志表格";
+            const filename = "故障列表表格";
 
             excel.export_json_to_excel({
               header,

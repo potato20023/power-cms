@@ -15,7 +15,8 @@ requestD.interceptors.request.use(config => {
     // 在发送请求之前做些什么
     if (getToken()) {
         config.headers = {
-            "p1":1,
+            "p1": sessionStorage.getItem('csId'),
+            // "p1":1,
             "p2": getToken(),
             "Content-Type": "application/json;chartset=UTF-8"
         }
@@ -32,10 +33,13 @@ requestD.interceptors.response.use(res => {
     // 对响应数据做些什么
     let _this = this
     if (res.data.code == 203) {
-        // 登录超时
-        alert('登录超时')
+        // 登录超时        
+        this.$message({
+            message: '登录超时',
+            type: 'warning'
+        });
         removeToken()
-        _this.$router.path('/login')
+        _this.$router.push('/login')
     }
     return res.data;
 }, err => {
