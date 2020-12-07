@@ -121,7 +121,8 @@ $vh:10.8;
 // 电表实时状况图
 .ammeterReal{
     width:1500/$vw + vw;
-    height:600/$vw + vw;
+    // height:600/$vw + vw;
+    height:600px;
     display: flex;
     justify-content: space-between;
     .ammeterLeft{

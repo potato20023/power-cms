@@ -33,6 +33,22 @@
           </el-select>
         </li>
         <li class="w250">
+          <el-date-picker
+            v-model="searchData.upTimeStart"
+            placeholder="请选择开始时间"
+            type="date"
+            class="w250"
+          ></el-date-picker>
+        </li>
+        <li class="w250">
+          <el-date-picker
+            v-model="searchData.upTimeEnd"
+            placeholder="请选择结束时间"
+            type="date"
+            class="w250"
+          ></el-date-picker>
+        </li>
+        <li class="w250">
           <el-button
             @click="getList()"
             class="search-btn"
@@ -158,6 +174,7 @@
       :visible.sync="dialogVisible"
       @closed="handleClosed"
       :title="ifAdd ? '新增' : '编辑'"
+      width="80%"
     >
       <el-form
         ref="ruleform"
@@ -235,7 +252,7 @@
       </el-form>
     </el-dialog>
 
-    <el-dialog :visible.sync="dialogVisibleReal" title="实时状况" width="80%">
+    <el-dialog :visible.sync="dialogVisibleReal" title="实时状况" width="80%" height="90%" @closed="closedReal">
       <div class="ammeterReal">
         <ul class="ammeterLeft">
           <li>
@@ -343,11 +360,9 @@ export default {
       searchData: {
         serialNumber: "",
         factory: "",
-        communicationAddress: "",
         stationId: "",
-        lineId: "",
-        collectorId: "",
-        opuser: 0,
+        upTimeStart:"",
+        upTimeEnd:""
       },
       formData: {
         serialNumber: "",
@@ -374,6 +389,7 @@ export default {
       collectorList: [], // 采集器列表
       statusAmmeterList: {
         ammeterDataDay: {},
+        echartData:{}
       }, // 电表实时列表
       page: 1, // 页数
       rows: 10, // 条数
@@ -381,7 +397,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(["userId", "csType"]),
+    ...mapGetters(["userId", "csType","screenWidth","screenHeight"]),
   },
   components: {},
   mounted() {
@@ -465,32 +481,49 @@ export default {
         id: e.id,
       };
       statusAmmeter(data).then((res) => {
-        if (res.code == 200) {
+        if (res.code == 200 && res.extend.ammeterDataDay != null) {
           this.statusAmmeterList.ammeterDataDay = res.extend.ammeterDataDay;
-          let datax = res.extend.echartData.datax;
-          let dataYfxygssz = res.extend.echartData.dataYfxygssz;
-          let dataYfxygxl = res.extend.echartData.dataYfxygxl;
-          let dataYla = res.extend.echartData.dataYla;
-          let dataYlb = res.extend.echartData.dataYlb;
-          let dataYlc = res.extend.echartData.dataYlc;
-          let dataYua = res.extend.echartData.dataYua;
-          let dataYub = res.extend.echartData.dataYub;
-          let dataYuc = res.extend.echartData.dataYuc;
-          let dataYzxygssz = res.extend.echartData.dataYzxygssz;
-          let dataYzxygxl = res.extend.echartData.dataYzxygxl;
-          this.ammeterE1(datax, dataYfxygssz, dataYfxygxl);
-          this.ammeterE2(datax, dataYla, dataYlb, dataYlc);
-          this.ammeterE3(datax, dataYua, dataYub, dataYuc);
-          this.ammeterE4(datax, dataYzxygssz, dataYzxygxl);
+          this.statusAmmeterList.echartData.datax = res.extend.echartData.datax;
+          this.statusAmmeterList.echartData.dataYfxygssz = res.extend.echartData.dataYfxygssz;
+          this.statusAmmeterList.echartData.dataYfxygxl = res.extend.echartData.dataYfxygxl;
+          this.statusAmmeterList.echartData.dataYla = res.extend.echartData.dataYla;
+          this.statusAmmeterList.echartData.dataYlb = res.extend.echartData.dataYlb;
+          this.statusAmmeterList.echartData.dataYlc = res.extend.echartData.dataYlc;
+          this.statusAmmeterList.echartData.dataYua = res.extend.echartData.dataYua;
+          this.statusAmmeterList.echartData.dataYub = res.extend.echartData.dataYub;
+          this.statusAmmeterList.echartData.dataYuc = res.extend.echartData.dataYuc;
+          this.statusAmmeterList.echartData.dataYzxygssz = res.extend.echartData.dataYzxygssz;
+          this.statusAmmeterList.echartData.dataYzxygxl = res.extend.echartData.dataYzxygxl;
+          this.ammeterE1();
+          this.ammeterE2();
+          this.ammeterE3();
+          this.ammeterE4();
+        }else{
+          this.statusAmmeterList.ammeterDataDay = '';
+          this.statusAmmeterList.echartData.datax = [];
+          this.statusAmmeterList.echartData.dataYfxygssz = [];
+          this.statusAmmeterList.echartData.dataYfxygxl = [];
+          this.statusAmmeterList.echartData.dataYla = [];
+          this.statusAmmeterList.echartData.dataYlb = [];
+          this.statusAmmeterList.echartData.dataYlc = [];
+          this.statusAmmeterList.echartData.dataYua = [];
+          this.statusAmmeterList.echartData.dataYub = [];
+          this.statusAmmeterList.echartData.dataYuc = [];
+          this.statusAmmeterList.echartData.dataYzxygssz = [];
+          this.statusAmmeterList.echartData.dataYzxygxl = [];
         }
       });
     },
+    // 实时状态关闭后
+    closedReal(){
+      this.dialogVisibleReal = false;
+    },
     // 实时状态图表1
-    ammeterE1(datax, dataYfxygssz, dataYfxygxl) {
+    ammeterE1() {
       let $this = this;
       let option = {
         title: {
-          text: "XXXXXXX",
+          text: "正/反向有功瞬时值",
           left: "0",
           top: "2%",
           textStyle: {
@@ -509,11 +542,16 @@ export default {
           width: "80%",
           height: "75%",
         },
-        color: ["#3379F8", "#33DDF8", "#FF6765"],
+        legend:{
+          data:['正向有功瞬时值','反向有功瞬时值'],
+          top:'2%',
+          right:'5%'
+        },
+        color: ["#CC6600", "#CD5C5C", "#DAA520"],
         xAxis: [{
           type: "category",
           boundaryGap: false,
-          data: datax,
+          data: $this.statusAmmeterList.echartData.datax,
           // 坐标轴刻度标签的相关设置
             axisLabel: {
               color: "#555555",
@@ -560,8 +598,8 @@ export default {
         ],
         series: [
           {
-            name: "dataYfxygssz",
-            data: dataYfxygssz,
+            name: "正向有功瞬时值",
+            data: $this.statusAmmeterList.echartData.dataYzxygssz,
             type: "line",
             symbol: "none",
             smooth: true,
@@ -572,15 +610,15 @@ export default {
                 x2: 0,
                 y2: 1,
                 colorStops: [
-                  { offset: 0, color: "#08233f" },
-                  { offset: 1, color: "#002031" },
+                  { offset: 0, color: "#CC6600" },
+                  { offset: 1, color: "#CC6666" },
                 ],
               },
             },
           },
           {
-            name: "dataYfxygxl",
-            data: dataYfxygxl,
+            name: "反向有功瞬时值",
+            data: $this.statusAmmeterList.echartData.dataYfxygssz,
             type: "line",
             symbol: "none",
             smooth: true,
@@ -591,8 +629,8 @@ export default {
                 x2: 0,
                 y2: 1,
                 colorStops: [
-                  { offset: 0, color: "#08233f" },
-                  { offset: 1, color: "#002031" },
+                  { offset: 0, color: "#CD5C5C" },
+                  { offset: 1, color: "#F08080" },
                 ],
               },
             },
@@ -604,33 +642,122 @@ export default {
       chart.resize();
       chart.setOption(option);
     },
-    // 实时状态图表2
-    ammeterE2(datax, dataYla, dataYlb, dataYlc) {
+        // 实时状态图表4
+    ammeterE2() {
       let $this = this;
       let option = {
+        title: {
+          text: "正/反向有功需量",
+          left: "0",
+          top: "2%",
+          textStyle: {
+            fontSize: (16 * $this.screenHeight) / 1080,
+            color: "#999999",
+          },
+        },
+        color: ["#CC6600", "#CD5C5C", "#DAA520"],
+        // 提示框组件
+        tooltip: {
+          trigger: "axis",
+          backgroundColor: "rgba(64,64,64,.9)",
+        },
+        grid: {
+          top: "12%",
+          left: "15%",
+          width: "80%",
+          height: "75%",
+        },
+        legend:{
+          data:['正向有功需量','反向有功需量'],
+          top:'2%',
+          right:'5%'
+        },
         xAxis: {
           type: "category",
           boundaryGap: false,
-          data: datax,
+          data: $this.statusAmmeterList.echartData.datax,
+          // 坐标轴刻度标签的相关设置
+            axisLabel: {
+              color: "#555555",
+              fontSize: (12 * $this.screenHeight) / 1080
+            },
+            // 坐标轴轴线的相关设置
+            axisLine: {
+              lineStyle: {
+                color: "#999999",
+                width: (1 * $this.screenHeight) / 1080
+              }
+            },
+            // 坐标轴刻度相关设置
+            axisTick: {
+              show: false
+            }
         },
-        yAxis: {
-          type: "value",
-        },
+        yAxis: [
+          {
+            type: "value",
+            // 坐标轴刻度标签的相关设置
+            axisLabel: {
+              color: "#555555",
+              fontSize: (12 * $this.screenHeight) / 1080,
+              formatter: function(value, index) {
+                if (value >= 10000 || value <= -10000) {
+                  return value / 10000 + "万";
+                }
+                return value;
+              },
+              // margin: 20,
+            },
+            // 坐标轴轴线的相关设置
+            axisLine: {
+              show: false,
+            },
+            // 坐标轴在grid区域中的分隔线
+            splitLine: {
+              lineStyle: {
+                color: "#999999",
+              },
+            },
+          },
+        ],
         series: [
           {
-            data: dataYla,
+            name:'正向有功需量',
+            data: $this.statusAmmeterList.echartData.dataYzxygxl,
             type: "line",
-            areaStyle: {},
+            symbol: "none",
+            smooth: true,
+            areaStyle: {
+              color: {
+                x: 0,
+                y: 0,
+                x2: 0,
+                y2: 1,
+                colorStops: [
+                  { offset: 0, color: "#CC6600" },
+                  { offset: 1, color: "#CC6666" },
+                ],
+              },
+            },
           },
           {
-            data: dataYlb,
+            name:'反向有功需量',
+            data: $this.statusAmmeterList.echartData.dataYfxygxl,
             type: "line",
-            areaStyle: {},
-          },
-          {
-            data: dataYlc,
-            type: "line",
-            areaStyle: {},
+            symbol: "none",
+            smooth: true,
+            areaStyle: {
+              color: {
+                x: 0,
+                y: 0,
+                x2: 0,
+                y2: 1,
+                colorStops: [
+                  { offset: 0, color: "#CD5C5C" },
+                  { offset: 1, color: "#F08080" },
+                ],
+              },
+            },
           },
         ],
       };
@@ -640,32 +767,140 @@ export default {
       chart.setOption(option);
     },
     // 实时状态图表3
-    ammeterE3(datax, dataYua, dataYub, dataYuc) {
+    ammeterE3() {
       let $this = this;
       let option = {
+        title: {
+          text: "瞬时电流",
+          left: "0",
+          top: "2%",
+          textStyle: {
+            fontSize: (16 * $this.screenHeight) / 1080,
+            color: "#999999",
+          },
+        },
+        color: ["#CC6600", "#CD5C5C", "#DAA520"],
+        // 提示框组件
+        tooltip: {
+          trigger: "axis",
+          backgroundColor: "rgba(64,64,64,.9)",
+        },
+        grid: {
+          top: "12%",
+          left: "15%",
+          width: "80%",
+          height: "75%",
+        },
+        legend:{
+          data:['a相瞬时电流','b相瞬时电流','c相瞬时电流'],
+          top:'2%',
+          right:'5%'
+        },
         xAxis: {
           type: "category",
           boundaryGap: false,
-          data: datax,
+          data: $this.statusAmmeterList.echartData.datax,
+          // 坐标轴刻度标签的相关设置
+            axisLabel: {
+              color: "#555555",
+              fontSize: (12 * $this.screenHeight) / 1080
+            },
+            // 坐标轴轴线的相关设置
+            axisLine: {
+              lineStyle: {
+                color: "#999999",
+                width: (1 * $this.screenHeight) / 1080
+              }
+            },
+            // 坐标轴刻度相关设置
+            axisTick: {
+              show: false
+            }
         },
-        yAxis: {
-          type: "value",
-        },
+        yAxis: [
+          {
+            type: "value",
+            // 坐标轴刻度标签的相关设置
+            axisLabel: {
+              color: "#555555",
+              fontSize: (12 * $this.screenHeight) / 1080,
+              formatter: function(value, index) {
+                if (value >= 10000 || value <= -10000) {
+                  return value / 10000 + "万";
+                }
+                return value;
+              },
+              // margin: 20,
+            },
+            // 坐标轴轴线的相关设置
+            axisLine: {
+              show: false,
+            },
+            // 坐标轴在grid区域中的分隔线
+            splitLine: {
+              lineStyle: {
+                color: "#999999",
+              },
+            },
+          },
+        ],
         series: [
           {
-            data: dataYua,
+            name:'a相瞬时电流',
+            data: $this.statusAmmeterList.echartData.dataYla,
             type: "line",
-            areaStyle: {},
+            symbol: "none",
+            smooth: true,
+            areaStyle: {
+              color: {
+                x: 0,
+                y: 0,
+                x2: 0,
+                y2: 1,
+                colorStops: [
+                  { offset: 0, color: "#CC6600" },
+                  { offset: 1, color: "#CC6666" },
+                ],
+              },
+            },
           },
           {
-            data: dataYub,
+            name:'b相瞬时电流',
+            data: $this.statusAmmeterList.echartData.dataYlb,
             type: "line",
-            areaStyle: {},
+            symbol: "none",
+            smooth: true,
+            areaStyle: {
+              color: {
+                x: 0,
+                y: 0,
+                x2: 0,
+                y2: 1,
+                colorStops: [
+                 { offset: 0, color: "#CD5C5C" },
+                  { offset: 1, color: "#F08080" },
+                ],
+              },
+            },
           },
           {
-            data: dataYuc,
+            name:'c相瞬时电流',
+            data: $this.statusAmmeterList.echartData.dataYlc,
             type: "line",
-            areaStyle: {},
+            symbol: "none",
+            smooth: true,
+            areaStyle: {
+              color: {
+                x: 0,
+                y: 0,
+                x2: 0,
+                y2: 1,
+                colorStops: [
+                 { offset: 0, color: "#DAA520" },
+                  { offset: 1, color: "#DEB887" },
+                ],
+              },
+            },
           },
         ],
       };
@@ -675,27 +910,140 @@ export default {
       chart.setOption(option);
     },
     // 实时状态图表4
-    ammeterE4(datax, dataYzxygssz, dataYzxygxl) {
+    ammeterE4() {
       let $this = this;
       let option = {
+        title: {
+          text: "瞬时电压",
+          left: "0",
+          top: "2%",
+          textStyle: {
+            fontSize: (16 * $this.screenHeight) / 1080,
+            color: "#999999",
+          },
+        },
+        color: ["#CC6600", "#CD5C5C", "#DAA520"],
+        // 提示框组件
+        tooltip: {
+          trigger: "axis",
+          backgroundColor: "rgba(64,64,64,.9)",
+        },
+        grid: {
+          top: "12%",
+          left: "15%",
+          width: "80%",
+          height: "75%",
+        },
+        legend:{
+          data:['a相瞬时电压','b相瞬时电压','c相瞬时电压'],
+          top:'2%',
+          right:'5%'
+        },
         xAxis: {
           type: "category",
           boundaryGap: false,
-          data: datax,
+          data: $this.statusAmmeterList.echartData.datax,
+          // 坐标轴刻度标签的相关设置
+            axisLabel: {
+              color: "#555555",
+              fontSize: (12 * $this.screenHeight) / 1080
+            },
+            // 坐标轴轴线的相关设置
+            axisLine: {
+              lineStyle: {
+                color: "#999999",
+                width: (1 * $this.screenHeight) / 1080
+              }
+            },
+            // 坐标轴刻度相关设置
+            axisTick: {
+              show: false
+            }
         },
-        yAxis: {
-          type: "value",
-        },
+        yAxis: [
+          {
+            type: "value",
+            // 坐标轴刻度标签的相关设置
+            axisLabel: {
+              color: "#555555",
+              fontSize: (12 * $this.screenHeight) / 1080,
+              formatter: function(value, index) {
+                if (value >= 10000 || value <= -10000) {
+                  return value / 10000 + "万";
+                }
+                return value;
+              },
+              // margin: 20,
+            },
+            // 坐标轴轴线的相关设置
+            axisLine: {
+              show: false,
+            },
+            // 坐标轴在grid区域中的分隔线
+            splitLine: {
+              lineStyle: {
+                color: "#999999",
+              },
+            },
+          },
+        ],
         series: [
           {
-            data: dataYzxygssz,
+            name:'a相瞬时电压',
+            data: $this.statusAmmeterList.echartData.dataYua,
             type: "line",
-            areaStyle: {},
+            symbol: "none",
+            smooth: true,
+            areaStyle: {
+              color: {
+                x: 0,
+                y: 0,
+                x2: 0,
+                y2: 1,
+                colorStops: [
+                   { offset: 0, color: "#CC6600" },
+                  { offset: 1, color: "#CC6666" },
+                ],
+              },
+            },
           },
           {
-            data: dataYzxygxl,
+            name:'b相瞬时电压',
+            data: $this.statusAmmeterList.echartData.dataYub,
             type: "line",
-            areaStyle: {},
+            symbol: "none",
+            smooth: true,
+            areaStyle: {
+              color: {
+                x: 0,
+                y: 0,
+                x2: 0,
+                y2: 1,
+                colorStops: [
+                 { offset: 0, color: "#CD5C5C" },
+                  { offset: 1, color: "#F08080" },
+                ],
+              },
+            },
+          },
+          {
+            name:'c相瞬时电压',
+            data: $this.statusAmmeterList.echartData.dataYuc,
+            type: "line",
+            symbol: "none",
+            smooth: true,
+            areaStyle: {
+              color: {
+                x: 0,
+                y: 0,
+                x2: 0,
+                y2: 1,
+                colorStops: [
+                  { offset: 0, color: "#DAA520" },
+                  { offset: 1, color: "#DEB887" },
+                ],
+              },
+            },
           },
         ],
       };
@@ -704,6 +1052,7 @@ export default {
       chart.resize();
       chart.setOption(option);
     },
+
     // 新增
     add() {
       this.dialogVisible = true;
@@ -1003,13 +1352,33 @@ export default {
     rows(res) {
       this.getList();
     },
+    screenWidth(res){
+      if(this.dialogVisibleReal){
+        this.ammeterE1();
+        this.ammeterE2();
+        this.ammeterE3();
+        this.ammeterE4();
+      }
+      
+    },
+    screenHeight(res){
+      if(this.dialogVisibleReal){
+        this.ammeterE1();
+        this.ammeterE2();
+        this.ammeterE3();
+        this.ammeterE4();
+      }
+    }
   },
 };
 </script>
 <style lang='scss' scoped>
-.el-dialog {
-  .el-dialog__body {
-    height: 70vh !important;
-  }
-}
+// .el-dialog__wrapper{
+//   .el-dialog {
+//     .el-dialog__body {
+//       height: 70vh !important;
+//     }
+//   }
+// }
+
 </style>

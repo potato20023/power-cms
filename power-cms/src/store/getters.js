@@ -1,4 +1,6 @@
 const getters = {
+    screenWidth: state => state.mode.screenWidth, // 获取屏幕宽度
+    screenHeight: state => state.mode.screenHeight, // 获取屏幕高度
     // 用户信息
     appid: state => state.user.appid,
     userName: state => state.user.userName,
