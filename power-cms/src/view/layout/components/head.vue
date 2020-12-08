@@ -11,9 +11,9 @@
           <i class="el-icon-arrow-down el-icon--right"></i>
         </span>
         <el-dropdown-menu slot="dropdown">
-          <el-dropdown-item @click.native="changePassword"
+          <!-- <el-dropdown-item @click.native="changePassword"
             >修改密码</el-dropdown-item
-          >
+          > -->
           <el-dropdown-item @click.native="loginOut">退出</el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
@@ -41,8 +41,7 @@ export default {
     // 点击 修改密码
     changePassword() {
       let $this = this;
-      $this
-        .$prompt("请输入新密码", "密码修改", {
+      $this.$prompt("请输入新密码", "密码修改", {
           confirmButtonText: "确定",
           cancelButtonText: "取消",
           // inputValidator:(value)=>{

@@ -23,6 +23,7 @@
             @change="subChangeSearch(searchData.stationId)"
             placeholder="请选择变电站"
             class="w250"
+            clearable
           >
             <el-option
               v-for="(item, index) in subList"
@@ -117,7 +118,7 @@
         label="状态"
         prop="status"
         align="center"
-        min-width="150px"
+        min-width="110px"
       >
         <template slot-scope="scope">
           <el-tag type="success" v-if="scope.row.status == 1">正常</el-tag>
@@ -211,6 +212,7 @@
             v-model="formData.stationId"
             :disabled="ifAdd ? false : true"
             @change="subChange(formData.stationId)"
+            placeholder="请选择变电站"
           >
             <el-option
               v-for="(item, index) in subList"
@@ -221,7 +223,7 @@
           </el-select>
         </el-form-item>
         <el-form-item label="所属线路" prop="lineId">
-          <el-select v-model="formData.lineId">
+          <el-select v-model="formData.lineId" placeholder="请选择线路">
             <el-option
               v-for="(item, index) in lineList"
               :key="index"
@@ -231,7 +233,7 @@
           </el-select>
         </el-form-item>
         <el-form-item label="所属采集器" prop="collectorId">
-          <el-select v-model="formData.collectorId">
+          <el-select v-model="formData.collectorId" placeholder="请选择采集器">
             <el-option
               v-for="(item, index) in collectorList"
               :key="index"
@@ -460,20 +462,12 @@ export default {
       this.getLineList(e);
       this.getCollectorList(e);
     },
-    // 变电站改变时,获取线路列表(查询)lineChangeSearch
-    subChangeSearch(e) {
-      this.getLineList(e);
-      this.getCollectorList(e);
-      this.getList();
-    },
-    // 线路改变时,获取电表列表(查询)
-    lineChangeSearch(e) {
-      this.getList();
-    },
-    // 采集器改变时,获取电表列表(查询)
-    collectorChangeSearch(e) {
-      this.getList();
-    },
+    // 变电站改变时,获取线路列表(查询)
+    // subChangeSearch(e) {
+    //   this.getLineList(e);
+    //   this.getCollectorList(e);
+    //   this.getList();
+    // },
     // 获取点表实时状态
     statusAmmeter(e) {
       this.dialogVisibleReal = true;

@@ -88,6 +88,15 @@ const actions = {
                     'upms:ammeter:create',
                     'upms:ammeter:update',
                     'upms:ammeter:delete',
+                    'upms:contraryControl:read',
+                    'upms:contraryControl:create',
+                    'upms:contraryControl:update',
+                    'upms:contraryControl:delete',
+                    'upms:personal:read',
+                    'upms:personal:create',
+                    'upms:personal:update',
+                    'upms:personal:delete',
+                    'upms:tableUpload:read',
                     'upms:tableUpload:read',
                     'upms:map1:read'
                 ]

@@ -32,7 +32,14 @@ export function deleteUser(data){
         params:data
     })
 }
-
+// 编辑用户信息（个人）
+export function updatePersonal(data){
+    return requestD({
+        url:'/rcpmcs/user/updatePersonal',
+        method:'post',
+        params:data
+    })
+}
 // 获取变电站列表
 export function getSubstationManagement(data){
     return requestD({
@@ -211,6 +218,23 @@ export function getFaultList(data){
 export function updateSystemParam(data){
     return requestD({
         url:'/rcpmcs/system/updateSystemParam',
+        method:'post',
+        params:data
+    })
+}
+
+// 时间同步
+export function ammeterSynTime(data){
+    return requestD({
+        url:'/rcpmcs/ammeter/synTime',
+        method:'post',
+        params:data
+    })
+}
+// 需量清零
+export function ammeterXlql(data){
+    return requestD({
+        url:'/rcpmcs/ammeter/xlql',
         method:'post',
         params:data
     })

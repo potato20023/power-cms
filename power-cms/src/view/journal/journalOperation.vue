@@ -8,6 +8,8 @@
             v-model="searchData.opType"
             @change="getList()"
             class="w250"
+            placeholder="请选择操作类型"
+            clearable
           >
             <el-option
               v-for="item in opTypeList"

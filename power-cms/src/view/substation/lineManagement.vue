@@ -15,6 +15,8 @@
             v-model="searchData.stationId"
             @change="getList()"
             class="w250"
+            placeholder="请选择变电站"
+            clearable
           >
             <el-option
               v-for="(item, index) in subList"
@@ -167,6 +169,7 @@
           <el-select
             v-model="formData.stationId"
             :disabled="ifAdd ? false : true"
+            placeholder="请选择变电站"
           >
             <el-option
               v-for="(item, index) in subList"

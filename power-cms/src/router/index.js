@@ -70,6 +70,23 @@ export const asyncRouterMap = [
             },
         ]
     },
+    // 个人中心
+    {
+        path: '/personal',
+        component: Layout,
+        redirect: '/personal/index',
+        meta: { title: '个人中心', icon: 'icon-table' },
+        children: [{
+                path: 'index',
+                name: '资料编辑',
+                component: () =>
+                    import ('@/view/user/personal'),
+                meta: { title: '资料编辑', icon: 'icon-List' },
+                menu: 'upms:personal:read',
+                hidden: false
+            },
+        ]
+    },
     // 变电站管理
     {
         path: '/mode',
@@ -179,6 +196,23 @@ export const asyncRouterMap = [
                     import ('@/view/param/param'),
                 meta: { title: '抄表日期设置', icon: 'icon-shangchuan' },
                 menu: 'upms:param:read',
+                hidden: false
+            }
+        ]
+    },
+    // 反控管理
+    {
+        path: '/contraryControl',
+        component: Layout,
+        redirect: '/contraryControl/index',
+        meta: { title: '反控管理', icon: 'icon-table' },
+        children: [ {
+                path: 'index',
+                name: '远程反控',
+                component: () =>
+                    import ('@/view/contraryControl/index'),
+                meta: { title: '远程反控', icon: 'icon-shangchuan' },
+                menu: 'upms:contraryControl:read',
                 hidden: false
             }
         ]
