@@ -5,21 +5,24 @@ import Layout from '@/view/layout/layout'
 
 Vue.use(Router)
 
-export const constantRouter = [{
-        path: '',
-        redirect: '/index',
-        name: '首页',
-        component: Layout,
-        meta: { title: '首页', icon: 'icon-Homehomepagemenu' },
-        children: [{
-            path: 'index',
-            name: '首页',
-            component: () =>
-                import ('@/view/homepage/index'),
-            meta: { title: '首页', icon: 'icon-Homehomepagemenu' },
-            hidden: false
-        }]
-    },
+export const constantRouter = [
+    // {
+    //     path: '',
+    //     redirect: '/index',
+    //     name: '首页',
+    //     component: Layout,
+    //     meta: { title: '首页', icon: 'icon-Homehomepagemenu' },
+    //     children: [
+    //         {
+    //             path: 'index',
+    //             name: '首页',
+    //             component: () =>
+    //                 import ('@/view/homepage/index'),
+    //             meta: { title: '首页', icon: 'icon-Homehomepagemenu' },
+    //             hidden: false
+    //         }
+    //     ]
+    // },
     {
         path: '/login',
         name: '登录',
@@ -155,14 +158,14 @@ export const asyncRouterMap = [
                 menu:'upms:signin:read',
                 hidden:false
             },
-            {
-                path:'operation',
-                name:'操作日志',
-                component:()=>import('@/view/journal/journalOperation'),
-                meta:{title:'操作日志',icon:''},
-                menu:'upms:operation:read',
-                hidden:false
-            }
+            // {
+            //     path:'operation',
+            //     name:'操作日志',
+            //     component:()=>import('@/view/journal/journalOperation'),
+            //     meta:{title:'操作日志',icon:''},
+            //     menu:'upms:operation:read',
+            //     hidden:false
+            // }
         ]
     },
     // 故障管理

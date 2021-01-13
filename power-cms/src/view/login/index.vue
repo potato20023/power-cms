@@ -52,8 +52,10 @@ export default {
     return {
       loading: false,
       loginForm: {
-        csLoginName: "admin",
-        csLoginPwd: "admin@rcpmcs",
+        csLoginName: "",
+        csLoginPwd: "",
+        // csLoginName: "admin",
+        // csLoginPwd: "admin@rcpmcs",
       },
       checkValue: "",
       show_num: [],
@@ -83,8 +85,13 @@ export default {
         if (valid) {
           $this.login($this.loginForm).then((res) => {
             if (res.data) {
+              // $this.$router.push(
+              //   { path: "/index" },
+              //   (onComplete) => {},
+              //   (onAbort) => {}
+              // );
               $this.$router.push(
-                { path: "/index" },
+                { path: "/user" },
                 (onComplete) => {},
                 (onAbort) => {}
               );

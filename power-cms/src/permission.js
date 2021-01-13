@@ -2,7 +2,7 @@
  * @Author: chumengzhen 
  * @Date: 2020-04-22 10:21:13 
  * @Last Modified by: chumengzhen
- * @Last Modified time: 2020-12-08 16:50:59
+ * @Last Modified time: 2021-01-13 09:59:47
  * 全局权限检测，包括（路由的全局守卫）
  */
 
@@ -17,7 +17,8 @@ router.beforeEach((to, from, next) => {
         // 有token时
         if (to.path == '/login') {
             // 有token时访问登录页，跳转至首页
-            next({ path: '/' })
+            // next({ path: '/' })
+            next({ path: '/user' })
         } else {
             // 有token时访问非登录页
             if (store.getters.menuList.length === 0) {
