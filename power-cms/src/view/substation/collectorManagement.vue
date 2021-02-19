@@ -99,24 +99,38 @@
         align="center"
         min-width="200px"
       ></el-table-column>
-      <el-table-column fixed="right" label="操作" width="200px">
+      <el-table-column fixed="right" label="操作" width="300px" align="center">
         <template slot-scope="scope">
           <el-button
             v-if="csType == 1"
             type="primary"
             size="small"
             @click="editClick(scope.row)"
+            style="margin-bottom:10px"
             >编辑</el-button
           >
           <el-button
             type="danger"
             size="small"
             @click="deleteClick(scope.row)"
+            style="margin-bottom:10px"
             v-if="scope.row.status == 1 && csType == 1"
             >删除</el-button
           >
-          <el-button type="danger" size="small" disabled v-else
+          <el-button type="danger" size="small" disabled v-else style="margin-bottom:10px"
             >已删除</el-button
+          >
+          <el-button type="primary" size="small" @click="getSynctimeManagement(scope.row)" style="margin-bottom:10px"
+            >时间同步</el-button
+          >
+          <el-button type="success" size="small" @click="getTimecalibrateManagement(scope.row)" style="margin-bottom:10px"
+            >电表校时</el-button
+          >
+          <el-button type="primary" size="small" @click="getDownloadammetersManagement(scope.row)" style="margin-bottom:10px"
+            >同步电表</el-button
+          >
+          <el-button type="warning" size="small" @click="getCollectorebootManagement(scope.row)" style="margin-bottom:10px"
+            >远程重启</el-button
           >
         </template>
       </el-table-column>
@@ -200,6 +214,10 @@ import {
   updateCollectorManagement,
   deleteCollectorManagement,
   getSubstationManagement,
+  synctimeManagement,
+  timecalibrateManagement,
+  downloadammetersManagement,
+  collectorebootManagement,
 } from "@/api/mode";
 import { mapGetters } from "vuex";
 import qs from "qs";
@@ -397,6 +415,87 @@ export default {
           });
         });
     },
+    // 时间同步
+    getSynctimeManagement(e) {
+      let data = {
+        id: e.id,
+      };
+      synctimeManagement(data).then((res) => {
+        if (res.code === 200) {
+          this.$message({
+            type: "success",
+            message: "同步成功",
+          });
+        } else {
+          this.$message({
+            type: "wraning",
+            message: "同步失败",
+          });
+        }
+        this.getList();
+      });
+    },
+    // 电表校时
+    getTimecalibrateManagement(e) {
+      let data = {
+        id: e.id,
+      };
+      timecalibrateManagement(data).then((res) => {
+        if (res.code === 200) {
+          this.$message({
+            type: "success",
+            message: "校时成功",
+          });
+        } else {
+          this.$message({
+            type: "wraning",
+            message: "校时失败",
+          });
+        }
+        this.getList();
+      });
+    },
+    // 同步电表
+    getDownloadammetersManagement(e) {
+      let data = {
+        id: e.id,
+      };
+      downloadammetersManagement(data).then((res) => {
+        if (res.code === 200) {
+          this.$message({
+            type: "success",
+            message: "同步成功",
+          });
+        } else {
+          this.$message({
+            type: "wraning",
+            message: "同步失败",
+          });
+        }
+        this.getList();
+      });
+    },
+    // 远程重启
+    getCollectorebootManagement(e) {
+      let data = {
+        id: e.id,
+      };
+      collectorebootManagement(data).then((res) => {
+        if (res.code === 200) {
+          this.$message({
+            type: "success",
+            message: "重启成功",
+          });
+        } else {
+          this.$message({
+            type: "wraning",
+            message: "重启失败",
+          });
+        }
+        this.getList();
+      });
+    },
+    
     // 分页
     handleCurrentChange(val) {
       this.page = val;

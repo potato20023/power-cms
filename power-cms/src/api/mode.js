@@ -138,6 +138,38 @@ export function deleteCollectorManagement(data){
         params:data
     })
 }
+// 采集器--时间同步
+export function synctimeManagement(data){
+    return requestD({
+        url:'/rcpmcs/ammeter/collector/synctime',
+        method:'post',
+        params:data
+    })
+}
+// 采集器--电表校时
+export function timecalibrateManagement(data){
+    return requestD({
+        url:'/rcpmcs/ammeter/collector/timecalibrate',
+        method:'post',
+        params:data
+    })
+}
+// 采集器--同步电表
+export function downloadammetersManagement(data){
+    return requestD({
+        url:'/rcpmcs/ammeter/collector/downloadammeters',
+        method:'post',
+        params:data
+    })
+}
+// 采集器--远程重启
+export function collectorebootManagement(data){
+    return requestD({
+        url:'/rcpmcs/ammeter/collector/collectoreboot',
+        method:'post',
+        params:data
+    })
+}
 
 // 获取电表列表
 export function getAmmeterList(data){
@@ -159,6 +191,14 @@ export function addAmmeter(data){
 export function updateAmmeter(data){
     return requestD({
         url:'/rcpmcs/ammeter/updateAmmeter',
+        method:'post',
+        params:data
+    })
+}
+// 同步电表
+export function addUpdateAmmeter(data){
+    return requestD({
+        url:'/rcpmcs/ammeter/addormodifyammeter',
         method:'post',
         params:data
     })

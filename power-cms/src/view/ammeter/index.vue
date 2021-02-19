@@ -82,7 +82,7 @@
         label="编号"
         prop="serialNumber"
         align="center"
-        min-width="100px"
+        min-width="120px"
       ></el-table-column>
       <el-table-column
         label="厂家"
@@ -126,6 +126,13 @@
         </template>
       </el-table-column>
       <el-table-column
+        label="同步状态"
+        prop="isSysncStr"
+        align="center"
+        min-width="110px"
+      >
+      </el-table-column>
+      <el-table-column
         label="创建时间"
         prop="createTimeStr"
         align="center"
@@ -148,6 +155,7 @@
           <el-button type="primary" size="small" @click="editOne(scope.row)"
             >编辑</el-button
           >
+          <el-button type="success" size="small" @click="syncAmmeter(scope.row)">同步</el-button>
           <el-button
             type="warning"
             size="small"
@@ -242,6 +250,32 @@
             ></el-option>
           </el-select>
         </el-form-item>
+        <el-form-item label="通信密码" prop="communicationCode">
+          <el-input
+            type="text"
+            v-model="formData.communicationCode"
+            placeholder="请输入通信密码"
+            maxlength="51"
+          ></el-input>
+        </el-form-item>
+        <el-form-item label="所属拓扑" prop="sstp">
+          <el-input-number
+            type="text"
+            v-model="formData.sstp"
+            :min="1"
+            :max="5"
+          ></el-input-number>
+        </el-form-item>
+        <el-form-item label="波特率" prop="baute">
+          <el-select v-model="formData.baute" placeholder="请选择波特率">
+            <el-option
+              v-for="(item, index) in bauteList"
+              :key="index"
+              :label="item.bauteName"
+              :value="item.id"
+            ></el-option>
+          </el-select>
+        </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="submitForm('ruleform')" v-if="ifAdd"
             >提交</el-button
@@ -254,7 +288,13 @@
       </el-form>
     </el-dialog>
 
-    <el-dialog :visible.sync="dialogVisibleReal" title="实时状况" width="80%" height="90%" @closed="closedReal">
+    <el-dialog
+      :visible.sync="dialogVisibleReal"
+      title="实时状况"
+      width="80%"
+      height="90%"
+      @closed="closedReal"
+    >
       <div class="ammeterReal">
         <ul class="ammeterLeft">
           <li>
@@ -343,6 +383,7 @@
 import {
   getAmmeterList,
   addAmmeter,
+  addUpdateAmmeter,
   updateAmmeter,
   deleteAmmeter,
   statusAmmeter,
@@ -363,8 +404,8 @@ export default {
         serialNumber: "",
         factory: "",
         stationId: "",
-        upTimeStart:"",
-        upTimeEnd:""
+        upTimeStart: "",
+        upTimeEnd: "",
       },
       formData: {
         serialNumber: "",
@@ -374,6 +415,9 @@ export default {
         lineId: "",
         collectorId: "",
         opuser: 0,
+        communicationCode: "",
+        sstp: 1,
+        baute: "",
       },
       rules: {
         serialNumber: [
@@ -384,14 +428,35 @@ export default {
           { required: true, message: "请输入厂家", trigger: "blur" },
           { min: 1, max: 20, message: "字符长度为 1~5", trigger: "blur" },
         ],
+        collectorId: [
+          { required: true, message: "请选择采集器", trigger: "blur" }
+        ]
       },
       dataList: [], // 电表列表
       subList: [], // 变电站列表
       lineList: [], // 线路列表
       collectorList: [], // 采集器列表
+      bauteList: [
+        {
+          id: 1200,
+          bauteName: 1200,
+        },
+        {
+          id: 2400,
+          bauteName: 2400,
+        },
+        {
+          id: 4800,
+          bauteName: 4800,
+        },
+        {
+          id: 9600,
+          bauteName: 9600,
+        },
+      ], //波特率
       statusAmmeterList: {
         ammeterDataDay: {},
-        echartData:{}
+        echartData: {},
       }, // 电表实时列表
       page: 1, // 页数
       rows: 10, // 条数
@@ -399,7 +464,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(["userId", "csType","screenWidth","screenHeight"]),
+    ...mapGetters(["userId", "csType", "screenWidth", "screenHeight"]),
   },
   components: {},
   mounted() {
@@ -478,22 +543,32 @@ export default {
         if (res.code == 200 && res.extend.ammeterDataDay != null) {
           this.statusAmmeterList.ammeterDataDay = res.extend.ammeterDataDay;
           this.statusAmmeterList.echartData.datax = res.extend.echartData.datax;
-          this.statusAmmeterList.echartData.dataYfxygssz = res.extend.echartData.dataYfxygssz;
-          this.statusAmmeterList.echartData.dataYfxygxl = res.extend.echartData.dataYfxygxl;
-          this.statusAmmeterList.echartData.dataYla = res.extend.echartData.dataYla;
-          this.statusAmmeterList.echartData.dataYlb = res.extend.echartData.dataYlb;
-          this.statusAmmeterList.echartData.dataYlc = res.extend.echartData.dataYlc;
-          this.statusAmmeterList.echartData.dataYua = res.extend.echartData.dataYua;
-          this.statusAmmeterList.echartData.dataYub = res.extend.echartData.dataYub;
-          this.statusAmmeterList.echartData.dataYuc = res.extend.echartData.dataYuc;
-          this.statusAmmeterList.echartData.dataYzxygssz = res.extend.echartData.dataYzxygssz;
-          this.statusAmmeterList.echartData.dataYzxygxl = res.extend.echartData.dataYzxygxl;
+          this.statusAmmeterList.echartData.dataYfxygssz =
+            res.extend.echartData.dataYfxygssz;
+          this.statusAmmeterList.echartData.dataYfxygxl =
+            res.extend.echartData.dataYfxygxl;
+          this.statusAmmeterList.echartData.dataYla =
+            res.extend.echartData.dataYla;
+          this.statusAmmeterList.echartData.dataYlb =
+            res.extend.echartData.dataYlb;
+          this.statusAmmeterList.echartData.dataYlc =
+            res.extend.echartData.dataYlc;
+          this.statusAmmeterList.echartData.dataYua =
+            res.extend.echartData.dataYua;
+          this.statusAmmeterList.echartData.dataYub =
+            res.extend.echartData.dataYub;
+          this.statusAmmeterList.echartData.dataYuc =
+            res.extend.echartData.dataYuc;
+          this.statusAmmeterList.echartData.dataYzxygssz =
+            res.extend.echartData.dataYzxygssz;
+          this.statusAmmeterList.echartData.dataYzxygxl =
+            res.extend.echartData.dataYzxygxl;
           this.ammeterE1();
           this.ammeterE2();
           this.ammeterE3();
           this.ammeterE4();
-        }else{
-          this.statusAmmeterList.ammeterDataDay = '';
+        } else {
+          this.statusAmmeterList.ammeterDataDay = "";
           this.statusAmmeterList.echartData.datax = [];
           this.statusAmmeterList.echartData.dataYfxygssz = [];
           this.statusAmmeterList.echartData.dataYfxygxl = [];
@@ -509,7 +584,7 @@ export default {
       });
     },
     // 实时状态关闭后
-    closedReal(){
+    closedReal() {
       this.dialogVisibleReal = false;
     },
     // 实时状态图表1
@@ -536,33 +611,35 @@ export default {
           width: "80%",
           height: "75%",
         },
-        legend:{
-          data:['正向有功瞬时值','反向有功瞬时值'],
-          top:'2%',
-          right:'5%'
+        legend: {
+          data: ["正向有功瞬时值", "反向有功瞬时值"],
+          top: "2%",
+          right: "5%",
         },
         color: ["#CC6600", "#CD5C5C", "#DAA520"],
-        xAxis: [{
-          type: "category",
-          boundaryGap: false,
-          data: $this.statusAmmeterList.echartData.datax,
-          // 坐标轴刻度标签的相关设置
+        xAxis: [
+          {
+            type: "category",
+            boundaryGap: false,
+            data: $this.statusAmmeterList.echartData.datax,
+            // 坐标轴刻度标签的相关设置
             axisLabel: {
               color: "#555555",
-              fontSize: (12 * $this.screenHeight) / 1080
+              fontSize: (12 * $this.screenHeight) / 1080,
             },
             // 坐标轴轴线的相关设置
             axisLine: {
               lineStyle: {
                 color: "#999999",
-                width: (1 * $this.screenHeight) / 1080
-              }
+                width: (1 * $this.screenHeight) / 1080,
+              },
             },
             // 坐标轴刻度相关设置
             axisTick: {
-              show: false
-            }
-        }],
+              show: false,
+            },
+          },
+        ],
         yAxis: [
           {
             type: "value",
@@ -570,7 +647,7 @@ export default {
             axisLabel: {
               color: "#555555",
               fontSize: (12 * $this.screenHeight) / 1080,
-              formatter: function(value, index) {
+              formatter: function (value, index) {
                 if (value >= 10000 || value <= -10000) {
                   return value / 10000 + "万";
                 }
@@ -636,7 +713,7 @@ export default {
       chart.resize();
       chart.setOption(option);
     },
-        // 实时状态图表4
+    // 实时状态图表4
     ammeterE2() {
       let $this = this;
       let option = {
@@ -661,31 +738,31 @@ export default {
           width: "80%",
           height: "75%",
         },
-        legend:{
-          data:['正向有功需量','反向有功需量'],
-          top:'2%',
-          right:'5%'
+        legend: {
+          data: ["正向有功需量", "反向有功需量"],
+          top: "2%",
+          right: "5%",
         },
         xAxis: {
           type: "category",
           boundaryGap: false,
           data: $this.statusAmmeterList.echartData.datax,
           // 坐标轴刻度标签的相关设置
-            axisLabel: {
-              color: "#555555",
-              fontSize: (12 * $this.screenHeight) / 1080
+          axisLabel: {
+            color: "#555555",
+            fontSize: (12 * $this.screenHeight) / 1080,
+          },
+          // 坐标轴轴线的相关设置
+          axisLine: {
+            lineStyle: {
+              color: "#999999",
+              width: (1 * $this.screenHeight) / 1080,
             },
-            // 坐标轴轴线的相关设置
-            axisLine: {
-              lineStyle: {
-                color: "#999999",
-                width: (1 * $this.screenHeight) / 1080
-              }
-            },
-            // 坐标轴刻度相关设置
-            axisTick: {
-              show: false
-            }
+          },
+          // 坐标轴刻度相关设置
+          axisTick: {
+            show: false,
+          },
         },
         yAxis: [
           {
@@ -694,7 +771,7 @@ export default {
             axisLabel: {
               color: "#555555",
               fontSize: (12 * $this.screenHeight) / 1080,
-              formatter: function(value, index) {
+              formatter: function (value, index) {
                 if (value >= 10000 || value <= -10000) {
                   return value / 10000 + "万";
                 }
@@ -716,7 +793,7 @@ export default {
         ],
         series: [
           {
-            name:'正向有功需量',
+            name: "正向有功需量",
             data: $this.statusAmmeterList.echartData.dataYzxygxl,
             type: "line",
             symbol: "none",
@@ -735,7 +812,7 @@ export default {
             },
           },
           {
-            name:'反向有功需量',
+            name: "反向有功需量",
             data: $this.statusAmmeterList.echartData.dataYfxygxl,
             type: "line",
             symbol: "none",
@@ -785,31 +862,31 @@ export default {
           width: "80%",
           height: "75%",
         },
-        legend:{
-          data:['a相瞬时电流','b相瞬时电流','c相瞬时电流'],
-          top:'2%',
-          right:'5%'
+        legend: {
+          data: ["a相瞬时电流", "b相瞬时电流", "c相瞬时电流"],
+          top: "2%",
+          right: "5%",
         },
         xAxis: {
           type: "category",
           boundaryGap: false,
           data: $this.statusAmmeterList.echartData.datax,
           // 坐标轴刻度标签的相关设置
-            axisLabel: {
-              color: "#555555",
-              fontSize: (12 * $this.screenHeight) / 1080
+          axisLabel: {
+            color: "#555555",
+            fontSize: (12 * $this.screenHeight) / 1080,
+          },
+          // 坐标轴轴线的相关设置
+          axisLine: {
+            lineStyle: {
+              color: "#999999",
+              width: (1 * $this.screenHeight) / 1080,
             },
-            // 坐标轴轴线的相关设置
-            axisLine: {
-              lineStyle: {
-                color: "#999999",
-                width: (1 * $this.screenHeight) / 1080
-              }
-            },
-            // 坐标轴刻度相关设置
-            axisTick: {
-              show: false
-            }
+          },
+          // 坐标轴刻度相关设置
+          axisTick: {
+            show: false,
+          },
         },
         yAxis: [
           {
@@ -818,7 +895,7 @@ export default {
             axisLabel: {
               color: "#555555",
               fontSize: (12 * $this.screenHeight) / 1080,
-              formatter: function(value, index) {
+              formatter: function (value, index) {
                 if (value >= 10000 || value <= -10000) {
                   return value / 10000 + "万";
                 }
@@ -840,7 +917,7 @@ export default {
         ],
         series: [
           {
-            name:'a相瞬时电流',
+            name: "a相瞬时电流",
             data: $this.statusAmmeterList.echartData.dataYla,
             type: "line",
             symbol: "none",
@@ -859,7 +936,7 @@ export default {
             },
           },
           {
-            name:'b相瞬时电流',
+            name: "b相瞬时电流",
             data: $this.statusAmmeterList.echartData.dataYlb,
             type: "line",
             symbol: "none",
@@ -871,14 +948,14 @@ export default {
                 x2: 0,
                 y2: 1,
                 colorStops: [
-                 { offset: 0, color: "#CD5C5C" },
+                  { offset: 0, color: "#CD5C5C" },
                   { offset: 1, color: "#F08080" },
                 ],
               },
             },
           },
           {
-            name:'c相瞬时电流',
+            name: "c相瞬时电流",
             data: $this.statusAmmeterList.echartData.dataYlc,
             type: "line",
             symbol: "none",
@@ -890,7 +967,7 @@ export default {
                 x2: 0,
                 y2: 1,
                 colorStops: [
-                 { offset: 0, color: "#DAA520" },
+                  { offset: 0, color: "#DAA520" },
                   { offset: 1, color: "#DEB887" },
                 ],
               },
@@ -928,31 +1005,31 @@ export default {
           width: "80%",
           height: "75%",
         },
-        legend:{
-          data:['a相瞬时电压','b相瞬时电压','c相瞬时电压'],
-          top:'2%',
-          right:'5%'
+        legend: {
+          data: ["a相瞬时电压", "b相瞬时电压", "c相瞬时电压"],
+          top: "2%",
+          right: "5%",
         },
         xAxis: {
           type: "category",
           boundaryGap: false,
           data: $this.statusAmmeterList.echartData.datax,
           // 坐标轴刻度标签的相关设置
-            axisLabel: {
-              color: "#555555",
-              fontSize: (12 * $this.screenHeight) / 1080
+          axisLabel: {
+            color: "#555555",
+            fontSize: (12 * $this.screenHeight) / 1080,
+          },
+          // 坐标轴轴线的相关设置
+          axisLine: {
+            lineStyle: {
+              color: "#999999",
+              width: (1 * $this.screenHeight) / 1080,
             },
-            // 坐标轴轴线的相关设置
-            axisLine: {
-              lineStyle: {
-                color: "#999999",
-                width: (1 * $this.screenHeight) / 1080
-              }
-            },
-            // 坐标轴刻度相关设置
-            axisTick: {
-              show: false
-            }
+          },
+          // 坐标轴刻度相关设置
+          axisTick: {
+            show: false,
+          },
         },
         yAxis: [
           {
@@ -961,7 +1038,7 @@ export default {
             axisLabel: {
               color: "#555555",
               fontSize: (12 * $this.screenHeight) / 1080,
-              formatter: function(value, index) {
+              formatter: function (value, index) {
                 if (value >= 10000 || value <= -10000) {
                   return value / 10000 + "万";
                 }
@@ -983,7 +1060,7 @@ export default {
         ],
         series: [
           {
-            name:'a相瞬时电压',
+            name: "a相瞬时电压",
             data: $this.statusAmmeterList.echartData.dataYua,
             type: "line",
             symbol: "none",
@@ -995,14 +1072,14 @@ export default {
                 x2: 0,
                 y2: 1,
                 colorStops: [
-                   { offset: 0, color: "#CC6600" },
+                  { offset: 0, color: "#CC6600" },
                   { offset: 1, color: "#CC6666" },
                 ],
               },
             },
           },
           {
-            name:'b相瞬时电压',
+            name: "b相瞬时电压",
             data: $this.statusAmmeterList.echartData.dataYub,
             type: "line",
             symbol: "none",
@@ -1014,14 +1091,14 @@ export default {
                 x2: 0,
                 y2: 1,
                 colorStops: [
-                 { offset: 0, color: "#CD5C5C" },
+                  { offset: 0, color: "#CD5C5C" },
                   { offset: 1, color: "#F08080" },
                 ],
               },
             },
           },
           {
-            name:'c相瞬时电压',
+            name: "c相瞬时电压",
             data: $this.statusAmmeterList.echartData.dataYuc,
             type: "line",
             symbol: "none",
@@ -1064,6 +1141,9 @@ export default {
       this.formData.stationId = e.stationId;
       this.formData.lineId = e.lineId;
       this.formData.collectorId = e.collectorId;
+      this.formData.communicationCode = e.communicationCode;
+      this.formData.sstp = e.sstp;
+      this.formData.baute = e.baute;
       this.formData.opuser = e.opuser;
       this.formData.id = e.id;
     },
@@ -1132,8 +1212,31 @@ export default {
       this.formData.stationId = "";
       this.formData.lineId = "";
       this.formData.collectorId = "";
+      this.formData.communicationCode = "";
+      this.formData.sstp = "";
+      this.formData.baute = "";
       this.formData.opuser = "";
       this.formData.id = "";
+    },
+    // 同步
+    syncAmmeter(e) {
+      let data = {
+        id: e.id,
+      };
+      addUpdateAmmeter(data).then((res) => {
+        if (res.code === 200) {
+          this.$message({
+            type: "success",
+            message: "同步成功",
+          });
+        } else {
+          this.$message({
+            type: "wraning",
+            message: "同步失败",
+          });
+        }
+        this.getList();
+      });
     },
     // 删除
     deleteClick(e) {
@@ -1346,23 +1449,22 @@ export default {
     rows(res) {
       this.getList();
     },
-    screenWidth(res){
-      if(this.dialogVisibleReal){
+    screenWidth(res) {
+      if (this.dialogVisibleReal) {
         this.ammeterE1();
         this.ammeterE2();
         this.ammeterE3();
         this.ammeterE4();
       }
-      
     },
-    screenHeight(res){
-      if(this.dialogVisibleReal){
+    screenHeight(res) {
+      if (this.dialogVisibleReal) {
         this.ammeterE1();
         this.ammeterE2();
         this.ammeterE3();
         this.ammeterE4();
       }
-    }
+    },
   },
 };
 </script>
@@ -1374,5 +1476,4 @@ export default {
 //     }
 //   }
 // }
-
 </style>
