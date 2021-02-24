@@ -244,6 +244,14 @@ export function getLogOperationList(data){
         params:data
     })
 }
+// 同步日志
+export function getLogSyncList(data){
+    return requestD({
+        url:'/rcpmcs/log/listLogSysnc',
+        method:'post',
+        params:data
+    })
+}
 
 // 故障列表  
 export function getFaultList(data){

@@ -247,14 +247,14 @@ export default {
     },
     // 需量清零
     xlql(e) {
-      this.$confirm("确定需量清零吗？", "提示", {
+      this.$prompt("请输入密码后清零", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
-        type: "warning",
       })
-        .then(() => {
+        .then(({value}) => {
           let data = {
             id: e.id,
+            communicationCode:value
           };
           ammeterXlql(data).then((res) => {
             if (res.code === 200) {

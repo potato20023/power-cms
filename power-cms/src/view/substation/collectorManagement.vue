@@ -106,30 +106,30 @@
             type="primary"
             size="small"
             @click="editClick(scope.row)"
-            style="margin-bottom:10px"
+            style="margin:0 10px 10px 0;width:80px"
             >编辑</el-button
           >
           <el-button
             type="danger"
             size="small"
             @click="deleteClick(scope.row)"
-            style="margin-bottom:10px"
+            style="margin:0 10px 10px 0;width:80px"
             v-if="scope.row.status == 1 && csType == 1"
             >删除</el-button
           >
-          <el-button type="danger" size="small" disabled v-else style="margin-bottom:10px"
+          <el-button type="danger" size="small" disabled v-else style="margin:0 10px 10px 0;width:80px"
             >已删除</el-button
           >
-          <el-button type="primary" size="small" @click="getSynctimeManagement(scope.row)" style="margin-bottom:10px"
+          <el-button type="primary" size="small" @click="getSynctimeManagement(scope.row)" style="margin:0 10px 10px 0;width:80px"
             >时间同步</el-button
           >
-          <el-button type="success" size="small" @click="getTimecalibrateManagement(scope.row)" style="margin-bottom:10px"
+          <el-button type="success" size="small" @click="getTimecalibrateManagement(scope.row)" style="margin:0 10px 10px 0;width:80px"
             >电表校时</el-button
           >
-          <el-button type="primary" size="small" @click="getDownloadammetersManagement(scope.row)" style="margin-bottom:10px"
+          <el-button type="primary" size="small" @click="getDownloadammetersManagement(scope.row)" style="margin:0 10px 10px 0;width:80px"
             >同步电表</el-button
           >
-          <el-button type="warning" size="small" @click="getCollectorebootManagement(scope.row)" style="margin-bottom:10px"
+          <el-button type="warning" size="small" @click="getCollectorebootManagement(scope.row)" style="margin:0 10px 10px 0;width:80px"
             >远程重启</el-button
           >
         </template>

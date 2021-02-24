@@ -165,7 +165,16 @@ export const asyncRouterMap = [
             //     meta:{title:'操作日志',icon:''},
             //     menu:'upms:operation:read',
             //     hidden:false
-            // }
+            // },
+            {
+                path:'journalsync',
+                name:"同步日志",
+                component:()=>import('@/view/journal/journalSync'),
+                meta:{title:'同步日志',icon:''},
+                menu:'upms:journalSync:read',
+                hidden:false
+            }
+
         ]
     },
     // 故障管理
